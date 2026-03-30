@@ -1,0 +1,343 @@
+<?php
+include('config/config.php');
+?>
+<!doctype html>
+<html class="no-js" lang="zxx">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Annual Report| ICMR-NIIRNCD </title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
+
+    <!-- CSS here -->
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/owl.carousel.min.css">
+    <link rel="stylesheet" href="assets/css/flaticon.css">
+    <link rel="stylesheet" href="assets/css/slicknav.css">
+    <link rel="stylesheet" href="assets/css/animate.min.css">
+    <link rel="stylesheet" href="assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="assets/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="assets/css/themify-icons.css">
+    <link rel="stylesheet" href="assets/css/slick.css">
+    <link rel="stylesheet" href="assets/css/nice-select.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="stylenav.css">
+    <link rel="stylesheet" href="assets/datatables/dataTables.bootstrap4.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+   <style>
+/* ============================
+   HORIZONTAL TIMELINE (UPGRADED)
+   ============================ */
+
+.timeline-horizontal {
+    display: flex;
+    flex-direction: row-reverse;     /* newest on left, oldest on right */
+    flex-wrap: wrap-reverse;         /* next line appears ABOVE (newest stays top) */
+    gap: 50px;
+    margin: 40px 0;
+    padding: 20px;
+    align-content: flex-start;
+}
+
+/* Each year container */
+.timeline-year-block {
+    width: 180px;
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 14px;
+    position: relative;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transition: .25s ease-in-out;
+    border-top: 4px solid #007bff;
+}
+
+.timeline-year-block:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 26px rgba(0,0,0,0.14);
+}
+
+/* Dot on top */
+.year-dot {
+    width: 16px;
+    height: 16px;
+    background: #007bff;
+    border-radius: 50%;
+    border: 3px solid white;
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 0 4px rgba(0,123,255,0.25);
+}
+
+/* Year title */
+.year-title {
+    background: #003679;
+    color: #fff;
+    padding: 6px 3px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: smaller;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+/* Arrow between years */
+.timeline-year-block::after {
+    /* content: "←"; */
+    position: absolute;
+    right: -35px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 32px;
+    color: #007bff;
+    opacity: 0.7;
+}
+
+/* Hide arrow on last (oldest) block */
+.timeline-year-block:first-child::after {
+    display: none;
+}
+
+/* Report card */
+.timeline-card {
+    background: #f7f9fc;
+    border-radius: 10px;
+    padding: 12px;
+    border-left: 4px solid #007bff;
+    margin-top: 12px;
+    transition: .25s ease-in-out;
+}
+
+.timeline-card:hover {
+    background: #eef4ff;
+    transform: translateX(4px);
+}
+
+/* Title */
+.report-title {
+    font-weight: 600;
+    font-size: smaller;
+    margin-bottom: 6px;
+}
+
+/* Download button */
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #003679;
+    border-radius: 6px;
+    font-size: 14px;
+    color: white;
+    margin-top: 10px;
+    transition: .25s;
+    text-decoration: none;
+}
+
+.download-btn:hover {
+    background: #003679;
+    transform: scale(1.05);
+    color: #fff;
+}
+
+/* Small screens: vertical stacked layout */
+@media (max-width: 768px) {
+
+    .timeline-horizontal {
+        flex-direction: column-reverse;
+        flex-wrap: nowrap;
+        gap: 25px;
+    }
+
+    .timeline-year-block {
+        width: 100%;
+    }
+
+    .timeline-year-block::after {
+        display: none;
+    }
+
+    .year-title {
+        font-size: 20px;
+    }
+}
+
+</style>
+
+
+</head>
+
+<body>
+
+    <!-- Preloader Start -->
+    <div id="preloader-active">
+        <!-- <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="preloader-circle"></div>
+                <div class="preloader-img pere-text">
+                    <img src="assets/img/logo/loaderlogo.jpg" alt="">
+                </div>
+            </div>
+        </div> -->
+    </div>
+    <!-- Preloader Start -->
+
+    <?php include('config/header.php'); ?>
+
+
+    <main>
+
+        <!-- slider Area Start-->
+        <div class="slider-area">
+            <!-- Mobile Menu -->
+            <div class="single-slider slider-height2 d-flex align-items-center" style="background-image:url(assets/img/hero/image.png);">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xl-12">
+                            <div class="hero-cap text-center">
+                                <h2>Annual Report</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- slider Area End-->
+
+      <div class="container mt-5">
+    <div class="timeline-horizontal">
+
+        <?php
+        // Make sure to fetch ascending so oldest items are printed first (rightmost)
+        $sqlx = "SELECT year FROM annualrp GROUP BY year ORDER BY year ASC";
+        $qx = $dbh->prepare($sqlx);
+        $qx->execute();
+        $years = $qx->fetchAll(PDO::FETCH_OBJ);
+
+        if ($qx->rowCount() > 0) {
+            foreach ($years as $y) {
+        ?>
+
+        <div class="timeline-year-block">
+            <div class="year-dot" aria-hidden="true"></div>
+
+            <div class="year-title">
+                <i class="fa-solid fa-calendar"></i>
+                <?php echo htmlentities($y->year) . ' - ' . htmlentities($y->year + 1); ?>
+            </div>
+
+            <?php
+            $sql = "SELECT * FROM annualrp WHERE year = :yr ORDER BY id ASC";
+            $q = $dbh->prepare($sql);
+            $q->bindParam(':yr', $y->year, PDO::PARAM_INT);
+            $q->execute();
+            $reports = $q->fetchAll(PDO::FETCH_OBJ);
+
+            foreach ($reports as $r) {
+            ?>
+                <div class="timeline-card" role="article" aria-label="Report for <?php echo htmlentities($y->year); ?>">
+                    <div class="report-title">
+                        <i class="fa-solid fa-file-pdf text-danger"></i>
+                        Annual Report
+                    </div>
+                    <a class="download-btn" 
+                        href="annualreport/en/<?php echo htmlentities($r->report_en); ?>" 
+                        target="_blank">
+                            <i class="fa-solid fa-eye"></i> View PDF
+                        </a>
+
+                </div>
+            <?php } ?>
+
+        </div>
+
+        <?php } } ?>
+
+    </div>
+</div>
+
+
+    </main>
+    <footer>
+        <!-- Footer Start-->
+
+        <!-- footer-bottom aera -->
+        <?php include('./config/footer.php'); ?>
+
+        <!-- Footer End-->
+    </footer>
+
+    <!-- JS here -->
+
+    <!-- All JS Custom Plugins Link Here here -->
+    <script src="./assets/js/vendor/modernizr-3.5.0.min.js"></script>
+
+    <!-- Jquery, Popper, Bootstrap -->
+    <script src="./assets/js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="./assets/js/popper.min.js"></script>
+    <script src="./assets/js/bootstrap.min.js"></script>
+    <!-- Jquery Mobile Menu -->
+    <script src="./assets/js/jquery.slicknav.min.js"></script>
+
+    <!-- Jquery Slick , Owl-Carousel Plugins -->
+    <script src="./assets/js/owl.carousel.min.js"></script>
+    <script src="./assets/js/slick.min.js"></script>
+
+    <!-- One Page, Animated-HeadLin -->
+    <script src="./assets/js/wow.min.js"></script>
+    <script src="./assets/js/animated.headline.js"></script>
+    <script src="./assets/js/jquery.magnific-popup.js"></script>
+
+    <!-- Scrollup, nice-select, sticky -->
+    <script src="./assets/js/jquery.scrollUp.min.js"></script>
+    <script src="./assets/js/jquery.nice-select.min.js"></script>
+    <script src="./assets/js/jquery.sticky.js"></script>
+
+    <!-- contact js -->
+    <script src="./assets/js/contact.js"></script>
+    <script src="./assets/js/jquery.form.js"></script>
+    <script src="./assets/js/jquery.validate.min.js"></script>
+    <script src="./assets/js/mail-script.js"></script>
+    <script src="./assets/js/jquery.ajaxchimp.min.js"></script>
+
+    <!-- Jquery Plugins, main Jquery -->
+    <script src="./assets/js/jquery-2.2.4.min.js"></script>
+    <script src="./assets/js/plugins.js"></script>
+    <script src="./assets/js/main.js"></script>
+    <script src="./assets/js/active.js"></script>
+
+    <script src="./assets/js/datatables-demo.js"></script>
+    <script src="./assets/datatables/jquery.dataTables.min.js"></script>
+    <script src="./assets/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <script>
+		$(document).ready(function() {
+			$('#btn1').click(function() {
+				$("#bg").css("fontSize", "18px");
+                $(".table").css("fontSize", "18px");
+			});
+
+            $('#btn2').click(function() {
+				$("#bg").css("fontSize", "16px");
+                $(".table").css("fontSize", "16px");
+			});
+
+			$('#btn3').click(function() {
+				$("#bg").css("fontSize", "13px");
+                $(".table").css("fontSize", "13px");
+			});
+
+
+		});
+	</script>
+</body>
+
+</html>

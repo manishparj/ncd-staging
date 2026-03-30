@@ -1,0 +1,8 @@
+{
+    "editor.defaultFormatter": "zobo.php-intellisense",
+    "html.format.contentUnformatted": "pre,code,textarea",
+    "html.format.templating": true,
+    "[php]": {
+        "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
+    }
+}
