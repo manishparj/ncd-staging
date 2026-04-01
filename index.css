@@ -707,7 +707,7 @@ body { font-family: 'Source Sans 3', sans-serif; color: var(--text); background:
   position: relative;
   width: 80%;
   max-width: 900px;
-  background: #111;
+  background: #fff;
   border-radius: 12px;
   padding: 15px;
   animation: zoomIn 0.3s ease;
@@ -744,19 +744,32 @@ body { font-family: 'Source Sans 3', sans-serif; color: var(--text); background:
   text-align: center;
   margin-top: 10px;
 }
+#modalTitle {
+  color: var(--gold);
+}
 
 /* NAV BUTTONS */
 .nav {
-  /* position: absolute; */
-  /* top: 50%;
-  transform: translateY(-50%); */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 28px;
-  background: rgba(255,255,255,0.2);
+  background: var(--gold);
   border: none;
   color: #fff;
   padding: 10px;
   cursor: pointer;
   border-radius: 50%;
+}
+
+.nav-tabs {
+  font-size: 28px;
+  border: none;
+  color: #fff;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
 }
 
 .prev { left: -15px; }

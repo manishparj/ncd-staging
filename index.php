@@ -277,22 +277,14 @@
 <section class="latest-updates-section">
   <div class="container">
     <div class="row mb-4">
-      <div class="col-lg-8 col-md-12 reveal">
+        <div class="col-lg-8 col-md-12">
+           <div class="col-lg-12 mb-5 reveal">
         <span class="sec-tag">Stay Informed</span>
         <h2 class="sec-title">Latest Updates</h2>
         <div class="sec-line"></div>
       </div>
-      <div class="col-lg-4 col-md-12 reveal">
-        <span class="sec-tag">Insights</span>
-        <h2 class="sec-title">Director’s Message</h2>
-        <div class="sec-line"></div>
-      </div>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col-lg-8 col-md-12">
           <div class="updates-tabs-wrapper">
-            <ul class="nav nav-tabs updates-tabs" id="updatesTab" role="tablist">
+            <ul class="nav-tabs updates-tabs" id="updatesTab" role="tablist">
               <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="whatsnew-tab" data-bs-toggle="tab" data-bs-target="#whatsnew" type="button" role="tab" aria-controls="whatsnew" aria-selected="true">
                   <i class="fas fa-newspaper"></i> What's New
@@ -509,8 +501,13 @@
           </div>
         </div>
         <div class="col-lg-4 col-md-12">
+          <div class="col-lg-12 mb-5 reveal">
+        <span class="sec-tag">Insights</span>
+        <h2 class="sec-title">Director’s Message</h2>
+        <div class="sec-line"></div>
+      </div>
           <div class="team-padding">
-            <div class="shadow mb-4 bg-white rounded text-center">
+            <div class="shadow bg-white rounded text-center">
               <?php
               $name = "director";
               $sql =
@@ -580,17 +577,12 @@
 ═══════════════════════════════════════ -->
 <section class="latest-updates-section">
   <div class="container">
-    <div class="row mb-4">
-      <div class="col-12 reveal">
-        <span class="sec-tag">Working Together</span>
-        <h2 class="sec-title">Our Partners & Collaborators</h2>
-        <div class="sec-line"></div>
-      </div>
-    </div>
-
     <div class="row">
-        <div class="col-12">
               <div class="container">
+                 <div class="col-12 reveal mb-5">
+          <span class="sec-tag">Working Together</span>
+          <h2 class="sec-title">Our Partners & Collaborators</h2>
+        <div class="sec-line"></div>
                     <div class="row g-4 justify-content-center">
 
                         <div class="text-center">
@@ -632,26 +624,14 @@
 
 <section class="latest-updates-section">
   <div class="container">
-    <div class="row mb-4">
-      <div class="col-8 reveal">
+    <div class="row">
+       <div class="col-lg-8 col-md-12">
+         <div class="col-12 mb-5 reveal">
         <span class="sec-tag">Reach Out</span>
         <h2 class="sec-title">Find Us & Get in Touch</h2>
         <div class="sec-line"></div>
       </div>
-      <div class="col-4 reveal">
-        <span class="sec-tag">Holiday List</span>
-        <h2 class="sec-title">Calandar 2026</h2>
-        <div class="sec-line"></div>
-      </div>
-    </div>
-
-    <div class="row">
-
-    
-      
-       <div class="col-lg-8 col-md-12">
-  <div class="section-full bg-white">
-
+       <div class="section-full bg-white">
     <!-- Google Map -->
     <div>
       <iframe 
@@ -663,7 +643,6 @@
         loading="lazy">
       </iframe>
     </div>
-
     <!-- Contact Details -->
     <div class="footer-col mt-3">
       <ul class="footer-contact">
@@ -691,49 +670,53 @@
     </div>
 
   </div>
-</div>
+    </div>
 
-   <div class="col-lg-4 col-md-12">
-        <div class="section-full bg-white">
-                <div class="container" style="margin-bottom: 5%;">
-                    <div class="row justify-content-center">
-                        <div class="col-lg-12">
+      <div class="col-lg-4 col-md-12">
+         <div class="col-12 mb-5 reveal">
+        <span class="sec-tag">Holiday List</span>
+        <h2 class="sec-title">Calandar 2026</h2>
+        <div class="sec-line"></div>
+      </div>
+          <div class="section-full bg-white">
+                    <div class="container" style="margin-bottom: 5%;">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-12">
 
-                            <div class="calendar-card">
-                                <div class="calendar-header">
-                                   <button id="prevBtn" class="cal-nav-btn" onclick="prevMonth()" aria-label="Previous Month">
-                                        <span class="arrow">❮</span>
-                                    </button>
+                                <div class="calendar-card">
+                                    <div class="calendar-header">
+                                      <button id="prevBtn" class="cal-nav-btn" onclick="prevMonth()" aria-label="Previous Month">
+                                            <span class="arrow">❮</span>
+                                        </button>
 
-                                    <h2 id="monthYear"></h2>
+                                        <h2 id="monthYear"></h2>
 
-                                    <button id="nextBtn" class="cal-nav-btn" onclick="nextMonth()" aria-label="Next Month">
-                                        <span class="arrow">❯</span>
-                                    </button>
+                                        <button id="nextBtn" class="cal-nav-btn" onclick="nextMonth()" aria-label="Next Month">
+                                            <span class="arrow">❯</span>
+                                        </button>
 
+                                    </div>
+
+                                    <div id="calendar"></div>
+
+                                    <div class="calendar-legend">
+                                        <span class="legend gazetted">GH</span>
+                                        <span class="legend restricted">RH</span>
+                                        <span class="legend weekend">Weekend</span>
+                                        <span class="legend today-legend">Today</span>
+                                    </div>
+                                  
                                 </div>
 
-                                <div id="calendar"></div>
-
-                                <div class="calendar-legend">
-                                    <span class="legend gazetted">GH</span>
-                                    <span class="legend restricted">RH</span>
-                                    <span class="legend weekend">Weekend</span>
-                                    <span class="legend today-legend">Today</span>
-                                </div>
-                              
                             </div>
-
                         </div>
                     </div>
                 </div>
-            </div>
+          </div>
       </div>
-      
-    </div>
      </div>
 
-            </section>
+</section>
 
 
   </main>
