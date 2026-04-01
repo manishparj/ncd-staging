@@ -1,537 +1,990 @@
-<?php include('./config/config.php');
-?>
+<?php include "./config/config.php"; ?>
+ <?php
+ $year = 2026;
+
+ $holidays = [
+     "2026-01-01" => ["type" => "RH", "name" => "New Year’s Day"],
+     "2026-01-03" => ["type" => "RH", "name" => "Hazrat Ali’s Birthday"],
+     "2026-01-14" => ["type" => "RH", "name" => "Makar Sankranti"],
+     "2026-01-14" => ["type" => "RH", "name" => "Magha Bihu / Pongal"],
+     "2026-01-23" => [
+         "type" => "RH",
+         "name" => "Sri Panchami / Basant Panchami",
+     ],
+     "2026-01-26" => ["type" => "GH", "name" => "Republic Day"],
+
+     "2026-02-01" => ["type" => "RH", "name" => "Guru Ravi Dass Birthday"],
+     "2026-02-12" => [
+         "type" => "RH",
+         "name" => "Birthday of Swami Dayananda Saraswati",
+     ],
+     "2026-02-15" => ["type" => "RH", "name" => "Maha Shivratri"],
+     "2026-02-19" => ["type" => "RH", "name" => "Shivaji Jayanti"],
+
+     "2026-03-03" => ["type" => "RH", "name" => "Holika Dahan"],
+     "2026-03-03" => ["type" => "RH", "name" => "Dol Yatra"],
+     "2026-03-04" => ["type" => "GH", "name" => "Holi"],
+     "2026-03-19" => [
+         "type" => "RH",
+         "name" => "Chaitra Sukladi / Gudi Padava / Ugadi / Cheti Chand",
+     ],
+     "2026-03-20" => ["type" => "RH", "name" => "Jamat-Ul-Vida"],
+     "2026-03-21" => ["type" => "GH", "name" => "Id-ul-Fitr"],
+     "2026-03-31" => ["type" => "GH", "name" => "Mahavir Jayanti"],
+
+     "2026-04-03" => ["type" => "GH", "name" => "Good Friday"],
+     "2026-04-05" => ["type" => "RH", "name" => "Easter Sunday"],
+     "2026-04-14" => [
+         "type" => "RH",
+         "name" => "Vaisakhi / Vishu / Tamil New Year’s Day",
+     ],
+     "2026-04-15" => ["type" => "RH", "name" => "Bohag Bihu (Assam)"],
+
+     "2026-05-01" => ["type" => "GH", "name" => "Buddha Purnima"],
+     "2026-05-09" => [
+         "type" => "RH",
+         "name" => "Birthday of Guru Rabindranath Tagore",
+     ],
+     "2026-05-27" => ["type" => "GH", "name" => "Id-ul-Zuha (Bakrid)"],
+
+     "2026-06-26" => ["type" => "GH", "name" => "Muharram"],
+
+     "2026-07-16" => ["type" => "RH", "name" => "Rath Yatra"],
+
+     "2026-08-15" => ["type" => "GH", "name" => "Independence Day"],
+     "2026-08-26" => ["type" => "GH", "name" => "Milad-un-Nabi / Id-e-Milad"],
+     "2026-08-28" => ["type" => "RH", "name" => "Raksha Bandhan"],
+
+     "2026-09-04" => ["type" => "GH", "name" => "Janmashtami (Vaishnava)"],
+     "2026-09-14" => ["type" => "GH", "name" => "Ganesh Chaturthi"],
+
+     "2026-10-02" => ["type" => "GH", "name" => "Mahatma Gandhi’s Birthday"],
+     "2026-10-18" => ["type" => "RH", "name" => "Dussehra (Saptami)"],
+     "2026-10-19" => ["type" => "RH", "name" => "Dussehra (Mahaptami)"],
+     "2026-10-20" => ["type" => "GH", "name" => "Dussehra (Vijaya Dashami)"],
+     "2026-10-26" => ["type" => "RH", "name" => "Maharishi Valmiki’s Birthday"],
+     "2026-10-29" => [
+         "type" => "RH",
+         "name" => "Karaka Chaturthi (Karwa Chouth)",
+     ],
+
+     "2026-11-08" => ["type" => "GH", "name" => "Diwali (Deepavali)"],
+     "2026-11-09" => ["type" => "RH", "name" => "Govardhan Puja"],
+     "2026-11-11" => ["type" => "RH", "name" => "Bhai Duj"],
+     "2026-11-15" => [
+         "type" => "RH",
+         "name" => "Pratihar Shashthi / Chhat Puja",
+     ],
+     "2026-11-24" => ["type" => "GH", "name" => "Guru Nanak’s Birthday"],
+
+     "2026-12-23" => ["type" => "RH", "name" => "Hazrat Ali’s Birthday"],
+     "2026-12-24" => ["type" => "RH", "name" => "Christmas Eve"],
+     "2026-12-25" => ["type" => "GH", "name" => "Christmas Day"],
+ ];
+ ?>
 <!doctype html>
-<html class="no-js" lang="zxx">
-
+<html class="no-js" lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>ICMR-NIIRNCD Jodhpur</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>ICMR-NIIRNCD Jodhpur</title>
+  <meta name="description" content="National Institute for Implementation Research on Non-Communicable Diseases, Jodhpur">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
 
-    <link rel="manifest" href="site.webmanifest">
-    <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
-
-    <!-- CSS here -->
-    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./assets/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="./assets/css/flaticon.css">
-    <link rel="stylesheet" href="./assets/css/slicknav.css">
-    <link rel="stylesheet" href="./assets/css/animate.min.css">
-    <link rel="stylesheet" href="./assets/css/magnific-popup.css">
-    <link rel="stylesheet" href="./assets/css/fontawesome-all.min.css">
-    <link rel="stylesheet" href="./assets/css/themify-icons.css">
-    <link rel="stylesheet" type="text/css" href="./assets/slick/slick.css" />
-    <link rel="stylesheet" type="text/css" href="./assets/slick/slick-theme.css" />
-    <!-- <link rel="stylesheet" href="./assets/css/slick.css"> -->
-    <link rel="stylesheet" href="./assets/css/nice-select.css">
-    <link rel="stylesheet" href="./assets/css/style.css">
-    <link rel="stylesheet" href="./stylenav.css">
-
-
+  <!-- Original vendor CSS — untouched -->
+  <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./assets/css/owl.carousel.min.css">
+  <link rel="stylesheet" href="./assets/css/flaticon.css">
+  <link rel="stylesheet" href="./assets/css/animate.min.css">
+  <link rel="stylesheet" href="./assets/css/magnific-popup.css">
+  <link rel="stylesheet" href="./assets/css/fontawesome-all.min.css">
+  <link rel="stylesheet" type="text/css" href="./assets/slick/slick.css">
+  <link rel="stylesheet" type="text/css" href="./assets/slick/slick-theme.css">
+  <link rel="stylesheet" href="./assets/css/nice-select.css">
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="./config/footer.css">
 </head>
-
 <body id="bg">
 
-    <!-- Preloader Start -->
-    <div id="preloader-active">
-        <div class="preloader d-flex align-items-center justify-content-center">
-            <div class="preloader-inner position-relative">
-                <div class="preloader-circle"></div>
-                <div class="preloader-img pere-text">
-                    <img src="assets/img/logo/loaderlogo.jpg" alt="">
-                </div>
-            </div>
-        </div>
+<!-- ═══════════════════════════════════════
+     PRELOADER  — original logic, styled
+═══════════════════════════════════════ -->
+<div id="preloader-active">
+  <div class="preloader d-flex align-items-center justify-content-center">
+    <div class="preloader-inner position-relative">
+      <div class="preloader-circle"></div>
+      <div class="preloader-img pere-text">
+        <img src="assets/img/logo/loaderlogo.jpg" alt="">
+      </div>
     </div>
-    <!-- Preloader Start -->
+  </div>
+</div>
 
-    <?php include('config/header.php'); ?>
+<!-- ═══════════════════════════════════════
+     HEADER  (top-bar + brand + navbar)
+═══════════════════════════════════════ -->
 
-    <main>
-        <!-- slider Area Start-->
-        <!-- ##### Hero Area Start ##### -->
-        <div class="hero-area">
+<?php include "./config/header.php"; ?>
+
+<div class="mob-overlay" id="mobOverlay"></div>
+
+<main>
+
+<!-- ═══════════════════════════════════════
+     HERO & ANNOUNCEMENT BAR - NEW LAYOUT
+═══════════════════════════════════════ -->
+<div class="hero-announcement-wrapper">
+  <div class="container">
+    <div class="row">
+      <!-- LEFT COLUMN: Hero Carousel (col 8) -->
+        <div class="col-lg-8 col-md-12 hero-col">
+          <div class="hero-area">
             <div class="hero-slideshow owl-carousel">
-            <?php                  	
-                        $sql = "SELECT * from slider where status='1' ORDER BY id asc";
+              
+                        <?php
+                        $sql =
+                            "SELECT * FROM slider WHERE status='1' ORDER BY id ASC";
                         $query = $dbh->prepare($sql);
                         $query->execute();
                         $results = $query->fetchAll(PDO::FETCH_OBJ);
-                        $cnt = 1;
+
                         if ($query->rowCount() > 0) {
                             foreach ($results as $result) {
-                           
+
+                                // Default image
+                                $imagePath = $result->doc_upload;
+
+                                // If multiple images → get ONLY cover image
+                                if ($result->has_multiple_images == 1) {
+                                    $sql_images = 'SELECT image_path 
+                                                        FROM slider_images 
+                                                        WHERE slider_id = ? 
+                                                        ORDER BY is_cover DESC, image_order ASC 
+                                                        LIMIT 1';
+                                    $query_images = $dbh->prepare($sql_images);
+                                    $query_images->execute([$result->id]);
+
+                                    if ($query_images->rowCount() > 0) {
+                                        $img = $query_images->fetch(
+                                            PDO::FETCH_OBJ
+                                        );
+                                        $imagePath = $img->image_path;
+                                    }
+                                }
                                 ?>
-                                <div class="single-slide bg-img">
-                              
-                                <div class="slide-bg-img bg-img bg-overlay"><img src="assets/img/hero/<?php echo htmlentities($result->doc_upload); ?>">
-                                </div>
-                              
-                                <div class="container">
-                                    <div class="row h-100 align-items-center justify-content-center">
-                                    <div class="col-12 xs-12 sm-12 col-lg-9">
-                                            <div class="welcome-text text-center mt-1">
-                                                <h4 data-animation="fadeInUp" data-delay="100ms" style="color:#003679;"><?php echo htmlentities($result->messages); ?></h4>
-                                                <p data-animation="fadeInUp" data-delay="100ms" style="color:#003679;"><?php echo htmlentities($result->messages2); ?></p>
+
+                                    <!-- SINGLE CLEAN SLIDE -->
+                                    <div class="single-slide bg-img slider-item"
+                                        data-slider-id="<?php echo $result->id; ?>"
+                                        data-title="<?php echo htmlentities(
+                                            $result->messages
+                                        ); ?>">
+
+                                      <div class="slide-bg-img bg-img bg-overlay">
+                                        <img src="assets/img/hero/<?php echo htmlentities(
+                                            $imagePath
+                                        ); ?>" alt="">
+                                      </div>
+
+                                      <div class="container-fluid" style="position: absolute; bottom: 0;">
+                                        <div class="row h-100 justify-content-center">
+                                          <div class="col-12 col-lg-12" style="padding: 0;">
+                                            <div class="welcome-text text-center">
+                                              <h4 data-animation="fadeInUp">
+                                                <?php echo htmlentities(
+                                                    $result->messages
+                                                ); ?>
+                                              </h4>
+                                              <p data-animation="fadeInUp">
+                                                <?php echo htmlentities(
+                                                    $result->messages2
+                                                ); ?>
+                                              </p>
                                             </div>
+                                          </div>
                                         </div>
+                                      </div>
+
+                                      <div class="slide-du-indicator"></div>
                                     </div>
-                                </div>
-                                
-                                <div class="slide-du-indicator"></div>
-                            </div>
-                                <?php
+
+                              <?php
                             }
                         }
+                        ?>
+
+            </div>
+          </div>
+        </div>
+
+      <!-- RIGHT COLUMN: Announcement Bar (col 4) -->
+      <div class="col-lg-4 col-md-12 right-panel-col">
+        <div class="announcement-card">
+          <div class="announcement-header">
+            <i class="fas fa-bullhorn"></i> Announcements
+          </div>
+          <div class="announcement-content">
+            <marquee direction="up" scrollamount="2" onmouseover="this.stop();" onmouseout="this.start();" loop="INFINITE">
+              <ul class="announcement-list">
+                <?php
+                $sql = "SELECT * from announcement order by id DESC";
+                $query = $dbh->prepare($sql);
+                $query->execute();
+                $results = $query->fetchAll(PDO::FETCH_OBJ);
+                if ($query->rowCount() > 0) {
+                    foreach ($results as $result) {
+                        if ($result->doc_upload) { ?>
+                        <li>
+                          <a href="./admin/en_doc/<?php echo htmlentities(
+                              $result->doc_upload
+                          ); ?>" target="_blank">
+                            <i class="fas fa-file-pdf"></i> <?php echo htmlentities(
+                                $result->messages
+                            ); ?>
+                          </a>
+                        </li>
+                      <?php } else { ?>
+                        <li>
+                          <i class="fas fa-info-circle"></i> <?php echo htmlentities(
+                              $result->messages
+                          ); ?>
+                        </li>
+                      <?php }
+                    }
+                }
+                ?>
+              </ul>
+            </marquee>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     LATEST UPDATES SECTION (TABS: What's New, Events, Tender, Recruitment)
+═══════════════════════════════════════ -->
+<section class="latest-updates-section">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-lg-8 col-md-12 reveal">
+        <span class="sec-tag">Stay Informed</span>
+        <h2 class="sec-title">Latest Updates</h2>
+        <div class="sec-line"></div>
+      </div>
+      <div class="col-lg-4 col-md-12 reveal">
+        <span class="sec-tag">Insights</span>
+        <h2 class="sec-title">Director’s Message</h2>
+        <div class="sec-line"></div>
+      </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-lg-8 col-md-12">
+          <div class="updates-tabs-wrapper">
+            <ul class="nav nav-tabs updates-tabs" id="updatesTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="whatsnew-tab" data-bs-toggle="tab" data-bs-target="#whatsnew" type="button" role="tab" aria-controls="whatsnew" aria-selected="true">
+                  <i class="fas fa-newspaper"></i> What's New
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="events-tab" data-bs-toggle="tab" data-bs-target="#events" type="button" role="tab" aria-controls="events" aria-selected="false">
+                  <i class="fas fa-calendar-alt"></i> Events
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tender-tab" data-bs-toggle="tab" data-bs-target="#tender" type="button" role="tab" aria-controls="tender" aria-selected="false">
+                  <i class="fas fa-gavel"></i> Tender
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="recruitment-tab" data-bs-toggle="tab" data-bs-target="#recruitment" type="button" role="tab" aria-controls="recruitment" aria-selected="false">
+                  <i class="fas fa-users"></i> Recruitment
+                </button>
+              </li>
+            </ul>
+            <div class="tab-content updates-tab-content" id="updatesTabContent">
+              <!-- What's New Tab -->
+              <div class="tab-pane fade show active" id="whatsnew" role="tabpanel" aria-labelledby="whatsnew-tab">
+                <div class="update-list-container">
+                  <ul class="update-list">
+                    <?php
+                    $sql_wn =
+                        "SELECT * from info_en where type = 'whatsnew' ORDER BY id DESC LIMIT 8";
+                    $query_wn = $dbh->prepare($sql_wn);
+                    $query_wn->execute();
+                    $results_wn = $query_wn->fetchAll(PDO::FETCH_OBJ);
+                    if ($query_wn->rowCount() > 0) {
+                        foreach ($results_wn as $result) {
+                            $sql_doc = "SELECT * from doc_en where doc_id = $result->id";
+                            $query_doc = $dbh->prepare($sql_doc);
+                            $query_doc->execute();
+                            $results_doc = $query_doc->fetchAll(PDO::FETCH_OBJ);
+                            if ($query_doc->rowCount() > 0) {
+                                foreach ($results_doc as $doc) { ?>
+                              <li>
+                                <a href="admin/en_doc/<?php echo htmlentities(
+                                    $doc->doc_main
+                                ); ?>" target="_blank">
+                                  <i class="fas fa-file-alt"></i> <?php echo htmlentities(
+                                      $result->title
+                                  ); ?>
+                                </a>
+                              </li>
+                            <?php }
+                            } else {
+                                ?>
+                            <li><i class="fas fa-info-circle"></i> <?php echo htmlentities(
+                                $result->title
+                            ); ?></li>
+                        <?php
+                            }
+                        }
+                    } else {
+                        ?>
+                        <li>No recent updates</li>
+                    <?php
+                    }
                     ?>
-             
+                  </ul>
+                  <a href="viewnews.php" class="view-all-link">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </div>
+              <!-- Events Tab -->
+              <div class="tab-pane fade" id="events" role="tabpanel" aria-labelledby="events-tab">
+                <div class="update-list-container">
+                  <ul class="update-list">
+                    <?php
+                    $sql_ev =
+                        "SELECT * from info_en where type = 'event' ORDER BY id DESC LIMIT 8";
+                    $query_ev = $dbh->prepare($sql_ev);
+                    $query_ev->execute();
+                    $results_ev = $query_ev->fetchAll(PDO::FETCH_OBJ);
+                    if ($query_ev->rowCount() > 0) {
+                        foreach ($results_ev as $result) {
+                            $sql_doc_ev = "SELECT * from doc_en where doc_id = $result->id";
+                            $query_doc_ev = $dbh->prepare($sql_doc_ev);
+                            $query_doc_ev->execute();
+                            $results_doc_ev = $query_doc_ev->fetchAll(
+                                PDO::FETCH_OBJ
+                            );
+                            if ($query_doc_ev->rowCount() > 0) {
+                                foreach ($results_doc_ev as $doc) { ?>
+                              <li>
+                                <a href="admin/en_doc/<?php echo htmlentities(
+                                    $doc->doc_main
+                                ); ?>" target="_blank">
+                                  <i class="fas fa-calendar-day"></i> <?php echo htmlentities(
+                                      $result->title
+                                  ); ?>
+                                </a>
+                              </li>
+                            <?php }
+                            } else {
+                                ?>
+                            <li><i class="fas fa-calendar-day"></i> <?php echo htmlentities(
+                                $result->title
+                            ); ?></li>
+                        <?php
+                            }
+                        }
+                    } else {
+                        ?>
+                        <li>No upcoming events</li>
+                    <?php
+                    }
+                    ?>
+                  </ul>
+                  <a href="view.php" class="view-all-link">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </div>
+              <!-- Tender Tab -->
+              <div class="tab-pane fade" id="tender" role="tabpanel" aria-labelledby="tender-tab">
+                <div class="update-list-container">
+                  <ul class="update-list">
+                    <?php
+                    $sql_tn =
+                        "SELECT * from info_en where type = 'tenders' ORDER BY id DESC LIMIT 8";
+                    $query_tn = $dbh->prepare($sql_tn);
+                    $query_tn->execute();
+                    $results_tn = $query_tn->fetchAll(PDO::FETCH_OBJ);
+                    if ($query_tn->rowCount() > 0) {
+                        foreach ($results_tn as $result) {
+                            $sql_doc_tn = "SELECT * from doc_en where doc_id = $result->id";
+                            $query_doc_tn = $dbh->prepare($sql_doc_tn);
+                            $query_doc_tn->execute();
+                            $results_doc_tn = $query_doc_tn->fetchAll(
+                                PDO::FETCH_OBJ
+                            );
+                            if ($query_doc_tn->rowCount() > 0) {
+                                foreach ($results_doc_tn as $doc) { ?>
+                              <li>
+                                <a href="admin/en_doc/<?php echo htmlentities(
+                                    $doc->doc_main
+                                ); ?>" target="_blank">
+                                  <i class="fas fa-file-signature"></i> <?php echo htmlentities(
+                                      $result->title
+                                  ); ?>
+                                </a>
+                              </li>
+                            <?php }
+                            } else {
+                                ?>
+                            <li><i class="fas fa-file-signature"></i> <?php echo htmlentities(
+                                $result->title
+                            ); ?></li>
+                        <?php
+                            }
+                        }
+                    } else {
+                        ?>
+                        <li>No tenders available</li>
+                    <?php
+                    }
+                    ?>
+                  </ul>
+                  <a href="tenders.php" class="view-all-link">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </div>
+              <!-- Recruitment Tab -->
+              <div class="tab-pane fade" id="recruitment" role="tabpanel" aria-labelledby="recruitment-tab">
+                <div class="update-list-container">
+                  <ul class="update-list">
+                    <?php
+                    $sql_rec =
+                        "SELECT * from info_en where type = 'recruitment' ORDER BY id DESC LIMIT 8";
+                    $query_rec = $dbh->prepare($sql_rec);
+                    $query_rec->execute();
+                    $results_rec = $query_rec->fetchAll(PDO::FETCH_OBJ);
+                    if ($query_rec->rowCount() > 0) {
+                        foreach ($results_rec as $result) {
+                            $sql_doc_rec = "SELECT * from doc_en where doc_id = $result->id";
+                            $query_doc_rec = $dbh->prepare($sql_doc_rec);
+                            $query_doc_rec->execute();
+                            $results_doc_rec = $query_doc_rec->fetchAll(
+                                PDO::FETCH_OBJ
+                            );
+                            if ($query_doc_rec->rowCount() > 0) {
+                                foreach ($results_doc_rec as $doc) { ?>
+                              <li>
+                                <a href="admin/en_doc/<?php echo htmlentities(
+                                    $doc->doc_main
+                                ); ?>" target="_blank">
+                                  <i class="fas fa-briefcase"></i> <?php echo htmlentities(
+                                      $result->title
+                                  ); ?>
+                                </a>
+                              </li>
+                            <?php }
+                            } else {
+                                ?>
+                            <li><i class="fas fa-briefcase"></i> <?php echo htmlentities(
+                                $result->title
+                            ); ?></li>
+                        <?php
+                            }
+                        }
+                    } else {
+                        ?>
+                        <li>No recruitment notifications</li>
+                    <?php
+                    }
+                    ?>
+                  </ul>
+                  <a href="recruitment.php" class="view-all-link">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-        <!-- ##### Hero Area End ##### -->
-        <!-- slider Area End -->
+        <div class="col-lg-4 col-md-12">
+          <div class="team-padding">
+            <div class="shadow mb-4 bg-white rounded text-center">
+              <?php
+              $name = "director";
+              $sql =
+                  "SELECT * FROM emp_details WHERE emp_type = :type ORDER BY emp_seniority ASC LIMIT 1";
+              $query = $dbh->prepare($sql);
+              $query->bindParam(":type", $name, PDO::PARAM_STR);
+              $query->execute();
+              $result = $query->fetch(PDO::FETCH_OBJ);
 
-<!-- announcement new code         -->
-        <div class="announcement-area" style="background-color:#d2e6ff ;">
-            <div class="container h-100">
-                <div class="row h-100 align-items-center">
-                    <div class="col-12 d-flex justify-content-between" style="line-height: 30px;">
-                        <div class="ann2 d-flex align-items-center">
-                            <span class="font-weight-bold">Announcement</span>
-                        </div>
+              if ($result): ?>
 
-                        <marquee direction="left" onmouseover="this.stop();" onmouseout="this.start();" loop="INFINITE">
-                            <div class="ann3 d-flex align-items-center"><span>
+                <!-- Director Image -->
+                <img src="admin/img/our_team/director/<?php echo htmlentities(
+                    $result->emp_image
+                ); ?>" 
+                    alt="<?php echo htmlentities($result->emp_name); ?>" 
+                    class="director-img mb-2">
 
+                <!-- Director Name -->
+                <h5 class="director-name">
+                  <?php echo htmlentities($result->emp_name); ?>
+                </h5>
 
-                                    <?php
+              <?php endif;
+              ?>
 
-                                    $sql = "SELECT * from announcement order by id DESC";
-                                    $query = $dbh->prepare($sql);
-                                    $query->execute();
-                                    $results = $query->fetchAll(PDO::FETCH_OBJ);
-                                    $cnt = 1;
-                                    if ($query->rowCount() > 0) {
-                                        foreach ($results as $result) {
-                                            if ($result->doc_upload) { ?>
-                                                 <a style="font-weight:bold;color:red" href="./admin/en_doc/<?php echo htmlentities($result->doc_upload); ?>" target="_blank"><u style="color: red;"><?php echo htmlentities($result->messages); ?></u></a>&nbsp;|
-                                            <?php
-                                            } else { ?>
-                                                <a style="font-weight:bold;color:red" ><?php echo htmlentities($result->messages); ?></a>&nbsp;|
-                                    <?php
-                                            }
-                                        }
-                                    }
-                                    ?>
-                                </span>
-                            </div>
+                    <!-- Description -->
+                  <?php
+                  $sql9 = "SELECT * FROM director_profile WHERE id = :id";
+                  $query9 = $dbh->prepare($sql9);
+                  $query9->bindParam(":id", $result->emp_id, PDO::PARAM_INT);
+                  $query9->execute();
+                  $profile = $query9->fetch(PDO::FETCH_OBJ);
+                  ?>
+            
+              <p class="card-text text-justify mt-2" id="bg1">
+                  <?php
+                  $message = $profile->director_message ?? "";
+                  $limit = 421; // adjust as needed
 
-                        </marquee>
+                  if (strlen($message) > $limit) {
+                      $shortMsg = substr($message, 0, $limit) . "...";
+                  } else {
+                      $shortMsg = $message;
+                  }
 
-                    </div>
-                </div>
+                  echo htmlentities($shortMsg);
+                  ?>
+
+              </p>
+              <!-- Button -->
+              <a class="genric-btn success"
+                href="about-director.php"
+                style="width:100%;background-color:#003679;">
+                View Profile →
+              </a>
+
             </div>
+          </div>
         </div>
+    </div>
+  </div>
+</section>
 
+<!-- ═══════════════════════════════════════
+     COLLABORATORS (Inline Carousel)
+═══════════════════════════════════════ -->
+<section class="latest-updates-section">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-12 reveal">
+        <span class="sec-tag">Working Together</span>
+        <h2 class="sec-title">Our Partners & Collaborators</h2>
+        <div class="sec-line"></div>
+      </div>
+    </div>
 
+    <div class="row">
+        <div class="col-12">
+              <div class="container">
+                    <div class="row g-4 justify-content-center">
 
-
-
-        <!-- <div class="announcement-area" style="background-color:#d2e6ff ;">
-            <div class="container h-100">
-                <div class="row h-100 align-items-center">
-                    <div class="col-12 d-flex justify-content-between" style="line-height: 30px;">
-                        <div class="ann2 d-flex align-items-center">
-                            <span class="font-weight-bold">Announcement</span>
+                        <div class="text-center">
+                          <div class="collab-circle">
+                            <img src="./assets/img/footerlogo/who.jpg" alt="WHO">
+                          </div>
                         </div>
 
-                        <marquee direction="left" onmouseover="this.stop();" onmouseout="this.start();" loop="INFINITE">
-                            <div class="ann3 d-flex align-items-center">
-
-                                 <span><a style="font-weight:bold;color:red" href="./doc/internship_notification.pdf" target="_blank">Regarding Invitation to Participate in One-Month Internship Program || 15 June – 16 July 2023</a></span>
-                                <span><a style="font-weight:bold;color:red" href="#">Welcome to ICMR-NIIRNCD Jodhpur</span>
-
-                            </div>
-
-                        </marquee>
-
-                    </div>
-                </div>
-            </div>
-        </div> -->
-
-
-
-
-        <!-- notication-tab Start -->
-        <div class="team-padding">
-            <div class="container">
-                <div class="row">
-                    <div class="col-xl-4 col-lg-4 col-md-4">
-                        <div class="shadow p-3 mb-5 bg-white rounded">
-                            <h3 class="card-title text-center pb-4 font-weight-bold" style="color: #012f5f;">From the Director's desk</h3>
-                            <p class="card-text text-justify" id="bg1">The institute is located in Jodhpur and it replaces the erstwhile Desert Medicine Research Centre. As the name suggests, our focus is on conducting research to identify and innovate methods to tackle the rising threats..</p>
-                            <a class="genric-btn success" href="about-director.php" style="width: 100%;background-color: #003679;">View profile »</a>
+                        <div class="text-center">
+                          <div class="collab-circle">
+                            <img src="./assets/img/footerlogo/aiimslogo.png" alt="AIIMS">
+                          </div>
                         </div>
-                    </div>
-                    <div class="col-xl-8 col-lg-8 col-md-8">
-                        <div class="shadow p-3 mb-5 bg-white rounded">
-                            <h3 class="card-title text-center font-weight-bold" style="color: #012f5f;">Welcome to ICMR-National Institute for Implementation Research on Non Communicable Diseases, Jodhpur</h3>
-                            <img src="assets/img/icon/line.png" />
-                            <p class="card-text text-justify" id="bg2">The National Institute for Implementation Research on Non Communicable Diseases came into existence on 07<SUP>th</SUP> December, 2019. The institute is located in Jodhpur and it replaces the erstwhile Desert Medicine Research Centre. The institute has state of the art facility to conduct basic laboratory based research in its microbiology, biochemistry and vector biology laboratories...</p>
-                            <a class="genric-btn success" href="about-niirncd.php" style="width: 100%;background-color: #003679;">See More » </a>
-                        </div>
-                    </div>
 
-                </div>
-            </div>
+                        <div class="text-center">
+                          <div class="collab-circle">
+                            <img src="./assets/img/footerlogo/icmr_logo.png" alt="ICMR">
+                          </div>
+                        </div>
+
+                        <div class="  text-center">
+                          <div class="collab-circle">
+                            <img src="./assets/img/footerlogo/MOHFW-Recruitment-2017.jpg" alt="MoHFW">
+                          </div>
+                        </div>
+
+                        <div class="  text-center">
+                          <div class="collab-circle">
+                            <img src="./assets/img/footerlogo/dhr.jpg" alt="DHR">
+                          </div>
+                        </div>
+
+                    </div>
+              </div>
         </div>
-        <!-- notification End-->
+  
+  </div>
+</section>
 
+<section class="latest-updates-section">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-8 reveal">
+        <span class="sec-tag">Reach Out</span>
+        <h2 class="sec-title">Find Us & Get in Touch</h2>
+        <div class="sec-line"></div>
+      </div>
+      <div class="col-4 reveal">
+        <span class="sec-tag">Holiday List</span>
+        <h2 class="sec-title">Calandar 2026</h2>
+        <div class="sec-line"></div>
+      </div>
+    </div>
 
-        <!-- collobrater Back Start -->
+    <div class="row">
 
-        <!-- Request Back End -->
+    
+      
+       <div class="col-lg-8 col-md-12">
+  <div class="section-full bg-white">
 
+    <!-- Google Map -->
+    <div>
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4255.999377738954!2d73.0276054281912!3d26.23391291055097!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39418b8f0bc41b59%3A0x452d769037ea5042!2sNational%20Institute%20for%20Implementation%20Research%20on%20Non-Communicable%20Diseases!5e0!3m2!1sen!2sin!4v1622014051415!5m2!1sen!2sin"
+        width="100%" 
+        height="300px" 
+        style="border:0;" 
+        allowfullscreen="" 
+        loading="lazy">
+      </iframe>
+    </div>
 
-        <!-- Request Back Start -->
-        <section class="request-back-area bg-img-request jarallax" style="background-image:url(assets/img/gallery/12.jpg);padding: 20px 0px;">
-            <div class="container ">
-                <div class="row d-flex justify-content-between">
-                    <div class="col-xl-4 col-lg-5 col-md-5 request-content">
-                        <div class="nav flex-column nav-pills form-box" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                            <a class="nav-link active px-lg-5 py-5 m-1 text-left" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true"><i class="fa fa-bullhorn"></i>&nbsp;What's New</a>
-                            <a class="nav-link px-lg-5 py-5 m-1 text-left" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false"><i class="fa fa-calendar-check"></i>&nbsp;Events</a>
-                            <a class="nav-link px-lg-5 py-5 m-1 text-left" href="employee-corner.php"><i class="fa fa-file"></i>&nbsp;Circulars</a>
-                        </div>
-                    </div>
+    <!-- Contact Details -->
+    <div class="footer-col mt-3">
+      <ul class="footer-contact">
+        <li>
+          <i class="fas fa-map-marker-alt"></i>
+          <span>New Pali Road, Jodhpur (Raj.) — 342005</span>
+        </li>
+        <li>
+          <i class="fas fa-phone-alt"></i>
+          <span>0291-2722403 / 0291-2720618</span>
+        </li>
+        <li>
+          <i class="fas fa-envelope"></i>
+          <span>director-niirncd[at]icmr[dot]gov[dot]in</span>
+        </li>
+        <li>
+          <i class="fas fa-fax"></i>
+          <span>0291-2720618</span>
+        </li>
+        <li>
+          <i class="fas fa-clock"></i>
+          <span>Mon-Fri: 9:00 AM - 5:30 PM</span>
+        </li>
+      </ul>
+    </div>
 
-                    <div class="col-xl-8 col-lg-7 col-md-7 form-box2" style="height:400px;">
-                        <div class="tab-content p-3" id="v-pills-tabContent" style="font-size:14px ;">
-                            <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
-                                <marquee style="height:300px;" direction="up" behavior="scroll" scrollamount="4" onmouseover="this.stop();" onmouseout="this.start();">
-                                    <?php
+  </div>
+</div>
 
-                                    $sql = "SELECT * from info_en where type = 'whatsnew' or type = 'recruitment' or type = 'circular' ORDER BY id DESC LIMIT 5";
-                                    $query = $dbh->prepare($sql);
-                                    $query->execute();
-                                    $results = $query->fetchAll(PDO::FETCH_OBJ);
-                                    $cnt = 1;
-                                    if ($query->rowCount() > 0) {
-                                        foreach ($results as $result) {                ?>
+   <div class="col-lg-4 col-md-12">
+        <div class="section-full bg-white">
+                <div class="container" style="margin-bottom: 5%;">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-12">
 
+                            <div class="calendar-card">
+                                <div class="calendar-header">
+                                   <button id="prevBtn" class="cal-nav-btn" onclick="prevMonth()" aria-label="Previous Month">
+                                        <span class="arrow">❮</span>
+                                    </button>
 
-                                            <?php
-                                            $sql9 = "SELECT * from doc_en where doc_id = $result->id";
-                                            $query9 = $dbh->prepare($sql9);
-                                            $query9->execute();
-                                            $results9 = $query9->fetchAll(PDO::FETCH_OBJ);
-                                            if ($query9->rowCount() > 0) {
-                                                foreach ($results9 as $result19) {                ?>
-                                                    <ul class=" unordered-list">
-                                                        <li class="text-justify"><a href="admin/en_doc/<?php echo htmlentities($result19->doc_main); ?>" target="_blank" style="color:white;"><?php echo htmlentities($result->title); ?></a>
-                                                            <hr style="margin-top:8px;opacity:0.3;border:1px solid #fff;">
-                                                        </li>
-                                                    </ul>
-                                            <?php }
-                                            } ?>
+                                    <h2 id="monthYear"></h2>
 
-                                            </tr>
-                                    <?php }
-                                    } ?>
-                                </marquee>
-                                <a href="viewnews.php" class="genric-btn success circle arrow medium f-right mb-2 border" style="background-color: #003679;">See More »</a>
+                                    <button id="nextBtn" class="cal-nav-btn" onclick="nextMonth()" aria-label="Next Month">
+                                        <span class="arrow">❯</span>
+                                    </button>
 
-                            </div>
-                            <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
-                                <marquee style="height:300px;" direction="up" behavior="scroll" scrollamount="4" onmouseover="this.stop();" onmouseout="this.start();">
-                                    <?php
-
-                                    $sql1 = "SELECT * from info_en where type = 'event' ORDER BY id DESC";
-                                    $query1 = $dbh->prepare($sql1);
-                                    $query1->execute();
-                                    $results1 = $query1->fetchAll(PDO::FETCH_OBJ);
-                                    if ($query1->rowCount() > 0) {
-                                        foreach ($results1 as $result11) {                ?>
-
-
-                                            <?php
-                                            $sql91 = "SELECT * from doc_en where doc_id = $result11->id";
-                                            $query91 = $dbh->prepare($sql91);
-                                            $query91->execute();
-                                            $results91 = $query91->fetchAll(PDO::FETCH_OBJ);
-                                            if ($query91->rowCount() > 0) {
-                                                foreach ($results91 as $result191) {                ?>
-                                                    <ul class="unordered-list">
-                                                        <li class="text-justify"><a href="admin/en_doc/<?php echo htmlentities($result191->doc_main); ?>" target="_blank" style="color:white;"><?php echo htmlentities($result11->title); ?></a>
-                                                            <hr style="margin-top:8px;opacity:0.3;border:1px solid #fff;">
-                                                        </li>
-                                                    </ul>
-                                            <?php }
-                                            } ?>
-
-                                            </tr>
-                                    <?php }
-                                    } ?>
-                                </marquee>
-                                <a href="view.php" class="genric-btn success circle arrow medium f-right mb-2 border" style="background-color: #003679;">See More »</a>
-
-                            </div>
-                            <!-- <div class="tab-pane fade" id="v-pills-messages" role="tabpanel"
-                                aria-labelledby="v-pills-messages-tab"></div> -->
-                        </div>
-                    </div>
-
-
-                </div>
-            </div>
-        </section>
-        <!-- Request Back End -->
-
-
-
-
-        <section class="border">
-            <div class="container">
-                <!-- <div class="col-12 text-center">
-                <h2 class="font-weight-bold">Our Collaborators</h2>
-                </div> -->
-
-                <div class="variable-width py-1">
-                    <div class="card px-4 border-0">
-                        <img class="img-thumbnail border-0" src="./assets/img/footerlogo/who.jpg" alt="" style="width: 150px;height: 100px;" alt="Card image cap">
-                    </div>
-                    <div class="card  px-5 border-0">
-                        <img class="img-thumbnail border-0" src="./assets/img/footerlogo/aiimslogo.png" alt="" style="width: 100px;height: 100px;" alt="Card image cap">
-                    </div>
-                    <div class="card  px-5 border-0">
-                        <img class="img-thumbnail border-0" src="./assets/img/footerlogo/icmr_logo.png" alt="" style="width: 200px;height: 100px;" alt="Card image cap">
-                    </div>
-                    <div class="card  px-5 border-0">
-                        <img class="img-thumbnail border-0" src="./assets/img/footerlogo/MOHFW-Recruitment-2017.jpg" alt="" style="width: 150px;height: 100px;" alt="Card image cap">
-                    </div>
-                    <div class="card  px-5 border-0">
-                        <img class="img-thumbnail border-0" src="./assets/img/footerlogo/dhr.jpg" alt="" style="width: 150px;height: 100px;" alt="Card image cap">
-                    </div>
-
-                </div>
-
-            </div>
-        </section>
-
-    </main>
-    <footer>
-        <!-- Footer Start-->
-        <div class="footer-area footer-padding" style="background-color: #003669!important;">
-            <div class="container">
-                <div class="row d-flex justify-content-between">
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-5">
-                        <div class="single-footer-caption mb-50">
-                            <div class="single-footer-caption mb-30">
-                                <!-- logo -->
-                                <div class="footer-logo">
-                                    <a href="index.php"><img src="assets/img/logo/logo3.jpg" alt="" width="200px" style="border: 1px solid #fff;"></a>
                                 </div>
-                                <div class="footer-tittle">
-                                    <!-- <div class="footer-pera">
-                                    ...
-                               </div> -->
+
+                                <div id="calendar"></div>
+
+                                <div class="calendar-legend">
+                                    <span class="legend gazetted">GH</span>
+                                    <span class="legend restricted">RH</span>
+                                    <span class="legend weekend">Weekend</span>
+                                    <span class="legend today-legend">Today</span>
                                 </div>
-                                <!-- social -->
-                                <div class="footer-social ml-2">
-                                    <a href="https://www.facebook.com/niirncdjodhpur"><i class="fa fa-facebook"></i></a>
-                                    <a href="https://twitter.com/niirncdjodhpur"><i class="fa fa-twitter"></i></a>
-                                    <a href="https://www.youtube.com/channel/UCHOjVSWGvInASMI46UVHJxg"><i class="fa fa-youtube"></i></a>
-                                    <a href="https://www.instagram.com/niirncd.jodhpur/"><i class="fa fa-instagram"></i></a>
-                                </div>
+                              
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-4 col-md-4 col-sm-5">
-                        <div class="single-footer-caption mb-50">
-                            <div class="footer-tittle footer-new">
-                                <h4 class="font-weight-bold">Contact Us</h4>
-                                <div class="line"></div>
-                                <ul>
-                                    <li> <span><i class="fa fa-map-marker"></i>
-                                            New Pali Road,<br>
-                                            Jodhpur (Raj.)- 342005</span> </li>
 
-                                    <li> <span><i class="fa fa-phone"></i>
-                                            Telephone: 0291-2722403, <br> 0291-2720618</span> </li>
-
-                                    <li> <span><i class="fa fa-envelope"></i>
-                                            director-niirncd[at]icmr[dot]gov[dot]in</span> </li>
-
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-2 col-lg-2 col-md-4 col-sm-5">
-                        <div class="single-footer-caption mb-50">
-                            <div class="footer-tittle footer-new1">
-                                <h4 class="font-weight-bold">Useful links</h4>
-                                <div class="line"></div>
-
-                                <ul>
-                                    <li><span><i class="fa fa-angle-right"></i>&nbsp;<a href="about-niirncd.php">About Us</a></span></li>
-                                    <li><span><i class="fa fa-angle-right"></i>&nbsp;<a href="team.php">Our team</a></span></li>
-                                    <li><span><i class="fa fa-angle-right"></i>&nbsp;<a href="recruitment.php">Career</a></span></li>
-                                    <li><span><i class="fa fa-angle-right"></i>&nbsp;<a href="employee-corner.php">Employee corner</a></span></li>
-
-                                    <!-- <li><span><i class="fa fa-angle-right"></i>&nbsp;<a href="./doc/Academic_program_Adv_NIIRNCD05072021.pdf" target="_blank">Short Term/Long Term Training Programme</a></span></li> -->
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-2 col-lg-2 col-md-4 col-sm-5">
-                        <div class="single-footer-caption mb-50">
-                            <div class="footer-tittle footer-new1">
-                                <h4 class="font-weight-bold">Covid-19 Info</h4>
-                                <div class="line"></div>
-
-                                <ul>
-                                    <li><span><i class="fa fa-angle-right"></i>&nbsp;<a href="covidinfo.php">SARS-CoV-2<br>(COVID-19) Testing Status</a></span></li>
-
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- <div class="ccol-xl-2 col-lg-2 col-md-4 col-sm-5">
-                        <div class="single-footer-caption mb-50">
-                            <div class="footer-tittle footer-new1">
-                                <h4 class="font-weight-bold">Visitors</h4>
-                                <div class="line"></div>
-                                <ul>
-                                    <li><span><i class="fa fa-angle-right"></i>&nbsp;<a><?php //include('counter.php');  ?></a></span></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div> -->
-                </div>
-            </div>
-        </div>
-        <!-- footer-bottom aera -->
-        <div class="footer-bottom-area footer-bg" style="background-color:#003669;">
-            <div class="container">
-                <div class="footer-border" style="padding: 10px 0px 10px;">
-                    <div class="row d-flex align-items-center">
-                        <div class="col-xl-12 ">
-                            <div class="footer-copy-right text-center">
-                                <p class="m-0">
-                                    Copyright &copy;
-                                    <script>
-                                        document.write(new Date().getFullYear());
-                                    </script> All rights reserved
-                                    ICMR-NIIRNCD Jodhpur |
-
-
-                                    Page Updated on : <?php
-
-                                                        $sql = "SELECT * from web_last_update_date ";
-                                                        $query = $dbh->prepare($sql);
-                                                        $query->execute();
-                                                        $results = $query->fetchAll(PDO::FETCH_OBJ);
-                                                        $cnt = 1;
-                                                        if ($query->rowCount() > 0) {
-                                                            foreach ($results as $result) {                ?>
-                                            <?php $newDateString = date_format(date_create_from_format('Y-m-d', $result->date), 'd/m/Y'); ?>
-                                            <?php echo htmlentities($newDateString); ?>
-                                    <?php $cnt = $cnt + 1;
-                                                            }
-                                                        } ?>
-
-
-
-                                </p>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+      </div>
+      
+    </div>
+     </div>
+
+            </section>
 
 
-        <!-- Footer End-->
-    </footer>
+  </main>
 
-    <!-- JS here -->
+<?php include "./config/footer.php"; ?>
 
-    <!-- All JS Custom Plugins Link Here here -->
-    <script src="./assets/js/vendor/modernizr-3.5.0.min.js"></script>
-    <!-- Jquery, Popper, Bootstrap -->
-    <script src="./assets/js/vendor/jquery-1.12.4.min.js"></script>
-    <script src="./assets/js/popper.min.js"></script>
-    <script src="./assets/js/bootstrap.min.js"></script>
-    <!-- Jquery Mobile Menu -->
-    <script src="./assets/js/jquery.slicknav.min.js"></script>
+<!-- JS (unchanged) -->
+<script src="./assets/js/vendor/modernizr-3.5.0.min.js"></script>
+<script src="./assets/js/vendor/jquery-1.12.4.min.js"></script>
+<script src="./assets/js/popper.min.js"></script>
+<script src="./assets/js/bootstrap.min.js"></script>
+<script src="./assets/js/jquery.slicknav.min.js"></script>
+<script src="./assets/js/owl.carousel.min.js"></script>
+<script src="./assets/js/gijgo.min.js"></script>
+<script src="./assets/js/wow.min.js"></script>
+<script src="./assets/js/animated.headline.js"></script>
+<script src="./assets/js/jquery.magnific-popup.js"></script>
+<script src="./assets/js/jquery.scrollUp.min.js"></script>
+<script src="./assets/js/jquery.nice-select.min.js"></script>
+<script src="./assets/js/jquery.sticky.js"></script>
+<script src="./assets/js/contact.js"></script>
+<script src="./assets/js/jquery.form.js"></script>
+<script src="./assets/js/jquery.validate.min.js"></script>
+<script src="./assets/js/mail-script.js"></script>
+<script src="./assets/js/jquery.ajaxchimp.min.js"></script>
+<script src="./assets/js/jquery-2.2.4.min.js"></script>
+<script src="./assets/js/plugins.js"></script>
+<script src="./assets/js/main.js"></script>
+<script src="./assets/js/active.js"></script>
+<script type="text/javascript" src="./assets/slick/slick.min.js"></script>
 
-    <!-- Jquery Slick , Owl-Carousel Plugins -->
-    <script src="./assets/js/owl.carousel.min.js"></script>
-    <!-- <script src="./assets/js/slick.min.js"></script> -->
+<script>
+$(document).ready(function() {
+  $('#btn1').click(function() { $("#bg").css("fontSize","18px"); $(".card-text").css("fontSize","18px"); });
+  $('#btn2').click(function() { $("#bg").css("fontSize","16px"); $(".card-text").css("fontSize","16px"); });
+  $('#btn3').click(function() { $("#bg").css("fontSize","13px"); $(".card-text").css("fontSize","13px"); });
 
-    <!-- Date Picker -->
-    <script src="./assets/js/gijgo.min.js"></script>
-    <!-- One Page, Animated-HeadLin -->
-    <script src="./assets/js/wow.min.js"></script>
-    <script src="./assets/js/animated.headline.js"></script>
-    <script src="./assets/js/jquery.magnific-popup.js"></script>
+  $('.variable-width').slick({
+    dots: false, infinite: true,
+    slidesToShow: 2, slidesToScroll: 1,
+    variableWidth: true, autoplay: true, autoplaySpeed: 3000,
+  });
 
-    <!-- Scrollup, nice-select, sticky -->
-    <script src="./assets/js/jquery.scrollUp.min.js"></script>
-    <script src="./assets/js/jquery.nice-select.min.js"></script>
-    <script src="./assets/js/jquery.sticky.js"></script>
+  if ($('.hero-slideshow').length) {
+    $('.hero-slideshow').owlCarousel({
+      loop: true, margin: 0, items: 1,
+      autoplay: true, autoplayTimeout: 5000, autoplayHoverPause: true,
+      animateOut: 'fadeOut', animateIn: 'fadeIn',
+      nav: true, dots: true,
+      navText: ['<i class="fa fa-chevron-left"></i>', '<i class="fa fa-chevron-right"></i>'],
+    });
+  }
+});
 
-    <!-- contact js -->
-    <script src="./assets/js/contact.js"></script>
-    <script src="./assets/js/jquery.form.js"></script>
-    <script src="./assets/js/jquery.validate.min.js"></script>
-    <script src="./assets/js/mail-script.js"></script>
-    <script src="./assets/js/jquery.ajaxchimp.min.js"></script>
+/* Vanilla JS for preloader, counters, etc */
+window.addEventListener('load', () => {
+  const pre = document.getElementById('preloader-active');
+  if (pre) { pre.classList.add('fade-out'); setTimeout(() => pre.style.display='none', 600); }
+});
+document.getElementById('fyear').textContent = new Date().getFullYear();
 
-    <!-- Jquery Plugins, main Jquery -->
-    <script src="./assets/js/jquery-2.2.4.min.js"></script>
-    <script src="./assets/js/plugins.js"></script>
-    <script src="./assets/js/main.js"></script>
-    <script src="./assets/js/active.js"></script>
-    <script type="text/javascript" src="./assets/slick/slick.min.js"></script>
+const ham = document.getElementById('hamburger');
+const navL = document.getElementById('navList');
+const overlay = document.getElementById('mobOverlay');
+function closeDrawer() {
+  ham.classList.remove('open'); navL.classList.remove('open');
+  overlay.classList.remove('show'); ham.setAttribute('aria-expanded','false');
+}
+if(ham) {
+  ham.addEventListener('click', () => {
+    const o = navL.classList.toggle('open');
+    ham.classList.toggle('open'); overlay.classList.toggle('show', o);
+    ham.setAttribute('aria-expanded', String(o));
+  });
+  overlay.addEventListener('click', closeDrawer);
+  navL.querySelectorAll('li').forEach(li => {
+    const sub = li.querySelector('.dropdown');
+    if (!sub) return;
+    li.querySelector('a').addEventListener('click', e => {
+      if (window.innerWidth <= 900) {
+        e.preventDefault();
+        navL.querySelectorAll('li.mob-open').forEach(x => { if(x!==li) x.classList.remove('mob-open'); });
+        li.classList.toggle('mob-open');
+      }
+    });
+  });
+}
 
+const revEls = document.querySelectorAll('.reveal');
+const revObs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); revObs.unobserve(e.target); }});
+}, { threshold: 0.12 });
+revEls.forEach(el => revObs.observe(el));
 
-    <script>
-        $(document).ready(function() {
-            $('#btn1').click(function() {
-                $("#bg").css("fontSize", "18px");
-                $(".card-text").css("fontSize", "18px");
-            });
+function animCount(el, target) {
+  let n = 0; const step = Math.ceil(target / 55);
+  const t = setInterval(() => {
+    n += step; if(n >= target){ n = target; clearInterval(t); }
+    el.textContent = n + '+';
+  }, 28);
+}
+const cntObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){ animCount(e.target, +e.target.dataset.target); cntObs.unobserve(e.target); }
+  });
+}, { threshold: 0.6 });
+document.querySelectorAll('.stat-num[data-target]').forEach(el => cntObs.observe(el));
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-            $('#btn2').click(function() {
-                $("#bg").css("fontSize", "16px");
-                $(".card-text").css("fontSize", "16px");
-            });
+<div id="galleryModal" class="gallery-modal">
+  <div class="modal-box">
 
-            $('#btn3').click(function() {
-                $("#bg").css("fontSize", "13px");
-                $(".card-text").css("fontSize", "13px");
-            });
+    <span class="close-btn">&times;</span>
 
+    <div class="image-container">
+      <img id="modalImage">
+    </div>
 
-        });
-    </script>
+    <div class="caption">
+      <h4 id="modalTitle"></h4>
+      <div id="imageCounter"></div>
+    </div>
 
-    <script>
-        $('.variable-width').slick({
-            dots: false,
-            infinite: true,
-            slidesToShow: 2,
-            slidesToScroll: 1,
-            variableWidth: true,
-            autoplay: true,
-            autoplaySpeed: 3000,
-        });
-    </script>
+    <button class="nav prev">&#10094;</button>
+    <button class="nav next">&#10095;</button>
 
+    <div id="thumbnailStrip" class="thumbnail-strip"></div>
+
+  </div>
+</div>
+
+<script>
+      let startX = 0;
+
+      // CLICK SLIDER
+      $(document).on('click', '.slider-item', function () {
+
+          let sliderId = $(this).data('slider-id');
+          let title = $(this).data('title');
+
+          $.ajax({
+              url: 'fetch-slider-images.php',
+              type: 'POST',
+              data: { slider_id: sliderId },
+
+              success: function (res) {
+          images = JSON.parse(res);
+
+          if (!images || images.length === 0) {
+              alert("No images available");
+              return;
+          }
+
+          if(images.length === 1){
+          $('.prev, .next').hide();
+      } else {
+          $('.prev, .next').show();
+      }
+
+          currentIndex = 0;
+
+          $('#modalTitle').text(title);
+
+          showImage();
+          loadThumbs();
+
+          $('#galleryModal').css('display','flex');
+      }
+          });
+      });
+
+      // SHOW IMAGE
+      function showImage() {
+          $('#modalImage')
+              .removeClass('zoomed')
+              .attr('src', 'assets/img/hero/' + images[currentIndex].image_path);
+
+          $('#imageCounter').text((currentIndex+1) + " / " + images.length);
+
+          $('.thumbnail-strip img').removeClass('active');
+          $(`.thumbnail-strip img[data-index="${currentIndex}"]`).addClass('active');
+      }
+
+      // THUMBNAILS
+      function loadThumbs() {
+          let html = '';
+          images.forEach((img, i) => {
+              html += `<img src="assets/img/hero/${img.image_path}" 
+                          data-index="${i}" 
+                          class="${i===0?'active':''}">`;
+          });
+          $('#thumbnailStrip').html(html);
+      }
+
+      // CLICK THUMB
+      $(document).on('click', '.thumbnail-strip img', function () {
+          currentIndex = $(this).data('index');
+          showImage();
+      });
+
+      // NEXT / PREV
+      $('.next').click(() => {
+          currentIndex = (currentIndex + 1) % images.length;
+          showImage();
+      });
+
+      $('.prev').click(() => {
+          currentIndex = (currentIndex - 1 + images.length) % images.length;
+          showImage();
+      });
+
+      // CLOSE
+      $('.close-btn, .gallery-modal').click(function(e){
+          if(e.target !== this) return;
+          $('#galleryModal').hide();
+      });
+
+      // KEYBOARD
+      $(document).keydown(function(e){
+          if(e.key === "Escape") $('#galleryModal').hide();
+          if(e.key === "ArrowRight") $('.next').click();
+          if(e.key === "ArrowLeft") $('.prev').click();
+      });
+
+      // ZOOM CLICK
+      $('#modalImage').click(function(){
+          $(this).toggleClass('zoomed');
+      });
+
+      // SWIPE (MOBILE)
+      $('#modalImage').on('touchstart', function(e){
+          startX = e.originalEvent.touches[0].clientX;
+      });
+
+      $('#modalImage').on('touchend', function(e){
+          let endX = e.originalEvent.changedTouches[0].clientX;
+
+          if(startX - endX > 50){
+              $('.next').click();
+          } else if(endX - startX > 50){
+              $('.prev').click();
+          }
+      });
+</script>
+  <script>
+        const year = <?= $year ?>;
+        const holidays = <?= json_encode($holidays) ?>;
+        </script>
+
+        <script src="calendar.js"></script>
 
 </body>
-
 </html>
