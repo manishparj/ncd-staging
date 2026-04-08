@@ -124,6 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
         { id: 'VIR', parentId: 'RL', name: 'Virology Lab', icon: '🦠' },
         { id: 'VBL', parentId: 'RL', name: 'Vector Biology Lab', icon: '🐜' },
         { id: 'MIC', parentId: 'RL', name: 'Microbiology Lab', icon: '🧪' },
+        { id: 'BTO', parentId: 'RL', name: 'BioTechnology Lab', icon: '🧪' },
 
         { id: 'ADMIN', parentId: 'SU', name: 'Administration', icon: '🏢' },
         { id: 'ACC', parentId: 'SU', name: 'Accounts & Finance', icon: '💰' },

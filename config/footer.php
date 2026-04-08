@@ -10,10 +10,6 @@
           <h4 class="footer-title">Social Media</h4>
           <div class="footer-divider"></div>
 
-          <p class="footer-description">
-            Follow Us for latest updates
-          </p>
-
           <div class="footer-social">
             <a href="#"><i class="fab fa-facebook-f"></i></a>
             <a href="#"><i class="fab fa-x-twitter"></i></a>
@@ -42,7 +38,7 @@
           <h4 class="footer-title">Information</h4>
           <div class="footer-divider"></div>
 
-          <ul class="footer-info">
+          <ul class="footer-info horizontal-links">
             <li>
               <i class="fas fa-sync-alt"></i>
               <div>
@@ -77,10 +73,10 @@
 
       <!-- Bottom Bar -->
       <div class="footer-bottom">
-        <p>
+        <div>
           © <span id="copyrightYear"></span>
           <strong>ICMR-NIIRNCD Jodhpur</strong>. All rights reserved.
-        </p>
+        </div>
       </div>
 
     </div>

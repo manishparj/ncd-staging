@@ -22,24 +22,21 @@
 <div class="top-bar">
   <div class="top-bar-inner">
 
-    <div class="top-bar-left">
-      <a href="index.php"><i class="fa fa-home fa-xs"></i> Home</a>
-      <span>/</span>
-      <a href="employee-corner.php">Employee Corner</a>
-      <span>/</span>
-      <a href="rti-act.php">RTI</a>
-      <span>/</span>
-      <a href="screen-reader-help.php"><i class="fa fa-universal-access fa-xs"></i> Screen Reader</a>
+    <!-- Toggle Button -->
+    <div class="toggle-btn">
+      <i class="fa fa-universal-access"></i>
     </div>
 
+    <!-- Content -->
     <div class="top-bar-right">
       <div class="font-btns">
         <button id="btn1" title="Increase font size">A+</button>
         <button id="btn2" title="Default font size">A</button>
         <button id="btn3" title="Decrease font size">A-</button>
       </div>
+
       <select class="lang-select" onchange="if(this.value) window.location.href=this.value">
-        <option value="index.php" selected>English</option>
+        <option value="index.php">English</option>
         <option value="hindex.php">हिंदी</option>
       </select>
     </div>
@@ -65,11 +62,6 @@
     <div class="brand-text">
       <h1>राष्ट्रीय असंचारी रोग कार्यान्वयन अनुसंधान संस्थान, जोधपुर</h1>
       <h2>National Institute for Implementation Research on Non-Communicable Diseases, Jodhpur</h2>
-    </div>
-
-    <div class="brand-logos">
-      <img src="assets/img/logo/logo75.png"             alt="Azadi Ka Amrit Mahotsav"/>
-      <img src="assets/img/logo/g20-2023-india-logo.png" alt="G20 India 2023"/>
     </div>
 
   </div>
@@ -122,11 +114,23 @@
         </ul>
       </li>
 
-      <li><a href="events.php">Events</a></li>
+      <li>
+        <a href="#" role="button">Employee Corner<i class="fa fa-chevron-down caret"></i></a>
+        <ul class="dropdown">
+          <li><a href="https://icmr.eoffice.gov.in/" target="_blank">eOffice</a></li>
+          <li><a href="https://www.niirncd.org/salary_slip">eSalary Slip Generation</a></li>
+          <li><a href="https://www.niirncd.org/esalary">eSalary Software</a></li>
+          <li><a href="https://mail.gov.in">Gov Email</a></li>
+          <li><a href="./sci-admin/">Scientists Panel</a></li>
+          <li><a href="viewform.php">Forms</a></li>
+          <li><a href="viewcircular.php">Circular</a></li>
+        </ul>
+      </li>
 
       <li>
         <a href="#" role="button">Media <i class="fa fa-chevron-down caret"></i></a>
         <ul class="dropdown">
+           <li><a href="events.php">Events</a></li>
           <li><a href="photogallery.php">Photo Gallery</a></li>
         </ul>
       </li>
@@ -138,6 +142,8 @@
           <li><a href="http://www.dhr.gov.in/" target="_blank" rel="noopener">Department of Health Research &nbsp;<i class="fa fa-external-link-alt fa-xs"></i></a></li>
           <li><a href="https://www.mohfw.gov.in/" target="_blank" rel="noopener">Ministry of Health &amp; Family Welfare &nbsp;<i class="fa fa-external-link-alt fa-xs"></i></a></li>
           <li><a href="calendar.php">Calendar 2026</a></li>
+          <li><a href="rti-act.php">RTI</a></li>
+          <li><a href="screen-reader-help.php">Screen Reader</a></li>
         </ul>
       </li>
 
@@ -152,8 +158,48 @@
     </ul>
 
     <div class="nav-badge">
-      <i class="fa fa-map-marker-alt"></i>
-      ICMR-NIIRNCD &nbsp;•&nbsp; Jodhpur
+     <form action="https://www.google.com/search" method="get" target="_blank" onsubmit="return combineQuery()">
+  
+  <div style="position:relative; width:260px;">
+    
+    <!-- Search Icon -->
+    <span style="
+      position:absolute;
+      left:10px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:16px;
+      color:#888;
+    ">🔍</span>
+
+    <!-- Input Field -->
+    <input 
+      type="text" 
+      id="searchBox"
+      placeholder="Search NIIRNCD website..."
+      style="
+        padding:10px 10px 10px 30px;
+        width:100%;
+        border-radius:20px;
+        border:1px solid #ccc;
+        outline:none;
+      "
+    >
+
+  </div>
+
+  <!-- Hidden query -->
+  <input type="hidden" name="q" id="finalQuery">
+
+</form>
+
+<script>
+function combineQuery() {
+  var input = document.getElementById("searchBox").value;
+  document.getElementById("finalQuery").value = "site:https://niirncd.icmr.org.in/ " + input;
+  return true;
+}
+</script>
     </div>
 
   </div>
@@ -211,6 +257,23 @@
   document.getElementById('btn3').addEventListener('click', () => {
     basePx = Math.max(basePx - 2, 12); root.style.fontSize = basePx + 'px';
   });
+</script>
+
+<script>
+const toggleBtn = document.querySelector('.toggle-btn');
+const panel = document.querySelector('.top-bar-inner');
+
+toggleBtn.addEventListener('click', function (e) {
+  e.stopPropagation();
+  panel.classList.toggle('open');
+});
+
+/* Optional: close when clicking outside */
+document.addEventListener('click', function(e){
+  if(!panel.contains(e.target)){
+    panel.classList.remove('open');
+  }
+});
 </script>
 
 </body>

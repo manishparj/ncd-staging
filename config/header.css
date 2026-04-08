@@ -35,55 +35,6 @@ body {
 /* ════════════════════════════════
    TOP UTILITY BAR
    ════════════════════════════════ */
-.top-bar {
-  background: var(--navy-dk);
-  color: rgba(255, 255, 255, .82);
-  font-size: 0.78rem;
-  letter-spacing: .03em;
-  padding: 0 1rem;
-}
-
-.top-bar-inner {
-  max-width: 1280px;
-  margin: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 4px;
-  min-height: 34px;
-}
-
-.top-bar-left {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex-wrap: wrap;
-}
-
-.top-bar-left a {
-  color: rgba(255, 255, 255, .75);
-  text-decoration: none;
-  padding: 2px 8px;
-  border-radius: 3px;
-  transition: var(--trans);
-}
-
-.top-bar-left a:hover {
-  color: var(--gold-lt);
-  background: rgba(255, 255, 255, .08);
-}
-
-.top-bar-left span {
-  color: rgba(255, 255, 255, .3);
-}
-
-.top-bar-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 /* Font-size buttons */
 .font-btns {
   display: flex;
@@ -243,7 +194,7 @@ body {
   padding: 0 18px;
   font-family: 'Rajdhani', sans-serif;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: bolder;
   letter-spacing: .045em;
   text-transform: uppercase;
   border-bottom: 3px solid transparent;
@@ -503,9 +454,6 @@ body {
     height: 56px;
   }
 
-  .top-bar-right .font-btns {
-    display: none;
-  }
 }
 
 /* ─── SMALL PHONES ─── */
@@ -520,3 +468,117 @@ body {
     justify-content: center;
   }
 }
+
+/* MAIN */
+.top-bar {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 9999;
+}
+
+/* CONTAINER */
+.top-bar-inner {
+  position: relative;
+}
+
+/* TOGGLE BUTTON (ALWAYS VISIBLE) */
+.toggle-btn {
+  width: 52px;
+  height: 52px;
+  background: #C8922A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  color: #fff;
+  border-radius: 10px 0 0 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 2;
+}
+
+/* PANEL (HIDDEN BY DEFAULT) */
+.top-bar-right {
+  position: absolute;
+  right: 52px; /* sits behind button */
+  top: -50px;
+  background: linear-gradient(180deg, #002254, #003669);
+  padding: 12px;
+  border-radius: 10px 0 0 10px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(20px);
+  transition: 0.3s ease;
+}
+
+/* SHOW PANEL */
+.top-bar-inner.open .top-bar-right {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+/* CONTENT */
+.font-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.font-btns button {
+  width: 36px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.font-btns button:hover {
+  background: #C8922A;
+}
+
+.lang-select {
+  font-size: 12px;
+  border-radius: 6px;
+  border: none;
+  padding: 5px;
+}
+
+/* ═══════════════════════════════════════════
+   TOP UTILITY BAR
+═══════════════════════════════════════════ */
+.top-bar { font-size: .78rem; }
+.top-bar-inner {
+  max-width: 1320px; margin: auto;
+  display: flex; align-items: center; justify-content: space-between;
+  min-height: 34px; flex-wrap: wrap; gap: 4px;
+}
+.top-bar-left { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+.top-bar-left a {
+  color: rgba(255,255,255,.72); text-decoration: none;
+  padding: 3px 9px; border-radius: 3px; transition: var(--t);
+}
+.top-bar-left a:hover { color: var(--gold-lt); background: rgba(255,255,255,.08); }
+.top-bar-left span { color: rgba(255,255,255,.28); }
+.top-bar-right {align-items: center; gap: 10px; }
+.font-btns { display: flex; gap: 3px; }
+.font-btns button {
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);
+  color: #fff; cursor: pointer; border-radius: 3px; padding: 2px 8px;
+  font-size: .73rem; font-family: inherit; transition: var(--t);
+}
+.font-btns button:hover { background: var(--gold); border-color: var(--gold); }
+.lang-sel {
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+  color: #fff; border-radius: 3px; padding: 2px 6px; font-size: .76rem; cursor: pointer;
+}
+.lang-sel option { background: var(--navy-dk); }

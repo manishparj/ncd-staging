@@ -103,6 +103,32 @@
                 </div>
             </li>
 
+             <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCommittee" aria-expanded="true" aria-controls="collapseCommittee">
+                    <i class="fas fa-fw fa-folder"></i>
+                    <span>Committee-Manage</span>
+                </a>
+                <div id="collapseCommittee" class="collapse" aria-labelledby="headingCommittee" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Name:</h6>
+                        <a class="collapse-item" href="Committee.php">Committee</a>
+                    </div>
+                </div>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseCommittee" aria-expanded="true" aria-controls="collapseCommittee">
+                    <i class="fas fa-fw fa-folder"></i>
+                    <span>Director-Manage</span>
+                </a>
+                <div id="collapseCommittee" class="collapse" aria-labelledby="headingCommittee" data-parent="#accordionSidebar">
+                    <div class="bg-white py-2 collapse-inner rounded">
+                        <h6 class="collapse-header">Name:</h6>
+                        <a class="collapse-item" href="directors.php">Director</a>
+                    </div>
+                </div>
+            </li>
+
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePub" aria-expanded="true" aria-controls="collapsePub">
                     <i class="fas fa-fw fa-folder"></i>

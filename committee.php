@@ -1,5 +1,28 @@
 <?php
 include('config/config.php');
+
+// Fetch all committees
+$committeeQuery = $conn->query("SELECT * FROM committees ORDER BY id ASC");
+$committees = [];
+
+while ($row = $committeeQuery->fetch_assoc()) {
+    $committeeId = $row['id'];
+    $committeeName = $row['committee_name'];
+
+    // Fetch members for this committee
+    $membersQuery = $conn->query("SELECT employee_name_designation, role FROM committee_members WHERE committee_id = $committeeId ORDER BY id ASC");
+    $members = [];
+    while ($member = $membersQuery->fetch_assoc()) {
+        $members[] = [$member['employee_name_designation'], $member['role']];
+    }
+
+    // Store committee data
+    $committees[$committeeId] = [
+        'title' => $committeeName,
+        'columns' => ['Sl. No.', 'Name & Designation', 'Role'],
+        'members' => $members
+    ];
+}
 ?>
 <!doctype html>
 <html class="no-js" lang="zxx">
@@ -25,48 +48,12 @@ include('config/config.php');
     <link rel="stylesheet" href="assets/css/themify-icons.css">
     <link rel="stylesheet" href="assets/css/slick.css">
     <link rel="stylesheet" href="assets/css/nice-select.css">
-    <link rel="stylesheet" href="assets/css/templete.css">
-
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="stylenav.css">
+    <link rel="stylesheet" href="./committee.css">
+    <link rel="stylesheet" href="./config/footer.css">
     <link rel="stylesheet" href="assets/datatables/dataTables.bootstrap4.css">
-    <style>
-                table th, table td {
-                    font-size: 0.95rem;
-                    vertical-align: middle;
-                }
-
-                h5 {
-                    font-weight: 600;
-                    color: #0b5ed7;
-                }
-
-                @media (max-width: 768px) {
-                    table th, table td {
-                        font-size: 0.85rem;
-                    }
-                }
-
-                #memberSearch {
-                    border-radius: 8px;
-                }
-
-                .table-responsive h5 {
-                    margin-top: 30px;
-                    font-weight: 600;
-                    color: #0b5ed7;
-                }
-
-                .form-select,
-                .form-control {
-                    border-radius: 8px;
-                }
-
-                label {
-                    font-size: 0.95rem;
-                }
-
-    </style>
+    
 
 </head>
 
@@ -87,356 +74,251 @@ include('config/config.php');
 
     <?php include('config/header.php'); ?>
 
-    <?php
-        $committees = [
-                "cwac" => [
-                    "title" => "Capital Works Advisory Committee (CWAC)",
-                    "columns" => ["Sl. No.", "Name & Designation", "Role"],
-                    "members" => [
-                        ["Dr. Sandeep Kumar Yadav, Professor, Dept. of Electrical Engineering, IIT Jodhpur (Electrical Expert)", "Chairperson"],
-                        ["Dr. Pardeep Kumar Dammala, Assistant Professor, Dept. of Civil & Infrastructure Engineering, IIT Jodhpur (Civil Expert)", "External Member"],
-                        ["Dr. Manish Kumar, Professor, Dept. of Production & Industrial Engineering, MBM University, Jodhpur (Mechanical Expert)", "External Member"],
-                        ["Dr. Rajesh Sharma, Head, Dept. of Architecture & T.P., MBM Jodhpur (Architect Expert)", "External Member"],
-                        ["Prof. (Dr.) Pankaj Bhardwaj, Director, ICMR-NIIRNCD, Jodhpur", "Member"],
-                        ["Dr. P. K. Anand, Scientist-F, NIIRNCD, Jodhpur", "Member"],
-                        ["Sh. Dinesh Soni, Sr. Administrative Officer, NIIRNCD, Jodhpur", "Member"],
-                        ["Sh. Om Prakash, Accounts Officer, NIIRNCD, Jodhpur", "Member"],
-                        ["Dr. Anil Purohit, STO-III, NIIRNCD, Jodhpur", "Member Secretary"],
-                        ["Representatives of the Executing Agency", "Invitees"]
-                    ]
-                ],
-                "cwmc" => [
-                    "title" => "Capital Works Monitoring Committee (CWMC)",
-                    "columns" => ["Sl. No.", "Name & Designation", "Role"],
-                    "members" => [
-                        ["Dr. P. K. Anand, Scientist-F, NIIRNCD", "Chairperson"],
-                        ["Dr. Sandeep Kumar Yadav, Professor, IIT Jodhpur", "External Member"],
-                        ["Dr. Rajesh Sharma, Head, Dept. of Architecture & T.P., MBM Jodhpur", "External Member"],
-                        ["Sh. Dinesh Soni, Sr. Administrative Officer", "Member"],
-                        ["Sh. Om Prakash, Accounts Officer", "Member"],
-                        ["Dr. Anil Purohit, STO-III", "Member Secretary"],
-                        ["Representatives of the Executing Agency", "Invitees"]
-                    ]
-                ],
-                "academic" => [
-                    "title" => "Academic Committee",
-                    "columns" => ["Sl. No.", "Name & Designation", "Role"],
-                    "members" => [
-                        ["Dr. P. K. Anand, Scientist-F", "Chairperson"],
-                        ["Dr. Mukti Khetan, Scientist-C", "Member"],
-                        ["Dr. Janesh Kumar Gautam, Scientist-C", "Academic Officer & Member"],
-                        ["Dr. Rina Kumawat, Scientist-C", "Member"],
-                        ["Sh. Utkarsh Trivedi, Technician-I", "Member Secretary"]
-                    ]
-                ],
-                "it" => [
-                    "title" => "IT & Website Committee",
-                    "columns" => ["Sl. No.", "Name & Designation", "Role"],
-                    "members" => [
-                        ["Dr. Ramesh Kumar Sangwan, Scientist-C", "Chairperson"],
-                        ["Sh. Pankaj Kumar, TO-B", "Member"],
-                        ["Sh. Rajnish Gupta, TO-A", "Member"],
-                        ["Sh. Haresh Jadhav, Section Officer", "Member"],
-                        ["Dr. Kanchan Bala, JHO", "Member"],
-                        ["Sh. Manish Prajapati, TS (CS/IT)", "Member Secretary"]
-                    ]
-                ],
-                "sports" => [
-                    "title" => "Sports Committee",
-                    "columns" => ["Sl. No.", "Name & Designation", "Role"],
-                    "members" => [
-                        ["Dr. Ramesh Kumar Huda, Scientist-C", "Chairperson"],
-                        ["Shri Haresh Jadhav, Section Officer", "Member"],
-                        ["Ms. Shakshi Dahiya, Technical Assistant", "Member"],
-                        ["Shri Bhanwar Manohar Singh, Technician-I", "Member"],
-                        ["Shri Narendra Kumar, UDC", "Member Secretary"]
-                    ]
-                ],
-
-                "transport" => [
-                    "title" => "Transport Committee",
-                    "columns" => ["Sl. No.", "Name & Designation", "Role / Responsibility"],
-                    "members" => [
-                        ["Dr. P. K. Anand, Scientist-F", "Chairperson"],
-                        ["Dr. Chet Ram Meena, TO-C", "Member & Transport In-charge"],
-                        ["Ms. Shakshi Dahiya, TA", "Member"],
-                        ["Sh. Haresh Jadhav, Section Officer", "Member Secretary"]
-                    ]
-                ],
-                "security" => [
-                    "title" => "Security & Fire Safety Committee",
-                    "columns" => ["Sl. No.", "Name & Designation", "Role / Responsibility"],
-                    "members" => [
-                        ["Dr. Suresh Yadav, Scientist-C", "Chairperson"],
-                        ["Dr. Anil Purohit, STO-III", "Member"],
-                        ["Shri K. L. Sharma, MSW", "Member & Security In-charge"],
-                        ["Shri Chetan Singh Gohil, Technician-I (ES)", "Member"],
-                        ["Shri Mayur Sankhala, Technician-I", "Member Secretary"]
-                    ]
-                ],
-                "guesthouse" => [
-                    "title" => "Guest House Management Committee (GHMC)",
-                    "columns" => ["Sl. No.", "Name & Designation", "Role"],
-                    "members" => [
-                        ["Dr. Janesh Kumar Gautam, Scientist-C", "Chairperson"],
-                        ["Dr. Kanchan Bala, Junior Health Officer", "Member"],
-                        ["Mr. Trilok Kumar, Technician-I", "Member"],
-                        ["Shri Pankaj Sharma, Personal Assistant", "Member Secretary"],
-                        ["Sh. Rahul Ranjan, Lab Attendant", "Member & Guest House Caretaker"]
-                    ]
-                ],
-                "room" => [
-                    "title" => "Central Room Allotment Committee",
-                    "columns" => ["Sl. No.", "Name & Designation", "Role"],
-                    "members" => [
-                        ["Prof. (Dr.) Pankaj Bhardwaj, Director", "Chairperson"],
-                        ["Dr. P. K. Anand, Scientist-F", "Member"],
-                        ["Dr. S. S. Mohanty, Scientist-F", "Member"],
-                        ["Dr. Mukti Khetan, Scientist-C", "Member"],
-                        ["Dr. Anil Purohit, STO-III", "Member"],
-                        ["Shri Haresh Jadhav, Section Officer", "Member Secretary"]
-                    ]
-                ],
-                "icc" => [
-                    "title" => "Internal Complaints Committee (ICC)",
-                    "columns" => ["Sl. No.", "Name & Designation", "Role"],
-                    "members" => [
-                        ["Dr. Mukti Khetan, Scientist-C, NIIRNCD", "Chairperson"],
-                        ["Dr. Sunita Chaudhary, Director, Ek Khwahish Education Foundation, Sikar", "Member"],
-                        ["Dr. Swati Chhabra, Addl. Professor of Anesthesiology, AIIMS, Jodhpur", "Member"],
-                        ["Dr. Ramesh Kumar Sangwan, Scientist-C & Social Scientist, NIIRNCD", "Member"],
-                        ["Ms. Sakshi Dahiya, Technical Assistant (Anthropology), NIIRNCD", "Member"],
-                        ["Mr. K. C. Ramayya Dora, Administrative Officer, NIIRNCD", "Member Secretary"]
-                    ]
-                    ],
-                    "moumoa" => [
-                    "title" => "MoU/MoA committee of ICMR-NIIRNCD, Jodhpur and MRHRU Jaipur",
-                    "columns" => ["Sl. No.", "Name & Designation", "Role"],
-                    "members" => [
-                        ["Dr. Janesh Kumar Gautam, Scientist-C, NIIRNCD", "Chairperson"],
-                        ["Dr. Mukti Khetan  Scientist-C, NIIRNCD", "Co-Chairperson"],
-                        ["Sh. Pankaj Kumar, TО-В, NIIRNCD", "Member Secretary"],
-                        ["Sr. Admin. Officer / Admin Officer, NIIRNCD", "Member"],
-                        ["Accounts Officer, NIIRNCD", "Member"],
-                    ]
-                    ],
-                    "medical" => [
-                    "title" => "Medical committee",
-                    "columns" => ["Sl. No.", "Name & Designation", "Role"],
-                    "members" => [
-                        ["Dr. P. K. Anand, Scientist-F, NIIRNCD, Jodhpur", "Chairperson"],
-                        ["Dr. Janesh Kumar Gautam, Scientist-C, NIIRNCD", "Member"],
-                        ["Dr. Rina Kumawat, Scientist-C, NIIRNCD", "Member"],
-                        ["Sh. Haresh Jadhav, Section Officer", "Member"],
-                    ]
-                ]
-        ];
-    ?>
-
     <main>
 
-        <!-- slider Area Start-->
-        <div class="slider-area">
-            <!-- Mobile Menu -->
-            <div class="single-slider slider-height2 d-flex align-items-center" style="background-image:url(assets/img/hero/services_hero.jpg);">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-xl-12">
-                            <div class="hero-cap text-center">
-                                <h2>Committee</h2>
+        <!-- Committee Header -->
+        <div class="committee-header single-slider slider-height2 d-flex align-items-center" style="background-image:url(assets/img/hero/services_hero.jpg);"">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <h2>Institute Committees</h2>
+                        <p>Discover our diverse committees driving excellence and innovation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div class="container mt-4">
+            <div class="row">
+                <div class="col-md-6 col-6 mb-3">
+                    <div class="stat-card">
+                        <div class="stat-number"><?php echo count($committees); ?></div>
+                        <div class="stat-label">Total Committees</div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-6 mb-3">
+                    <div class="stat-card">
+                        <div class="stat-number">
+                            <?php 
+                            $totalMembers = 0;
+                            foreach($committees as $committee) {
+                                $totalMembers += count($committee['members']);
+                            }
+                            echo $totalMembers;
+                            ?>
+                        </div>
+                        <div class="stat-label">Total Members</div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="container mt-5">
+            <div class="filter-section">
+                <div class="row align-items-end">
+                    <div class="col-lg-5 col-md-6 mb-3">
+                        <label class="filter-label">
+                            <i class="fas fa-filter"></i> Select Committee
+                        </label>
+                        <select class="form-select-custom w-100" id="committeeSelect" onchange="filterCommittees()" style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 12px 15px;">
+                            <option value="all">📋 All Committees</option>
+                            <?php foreach ($committees as $id => $committee): ?>
+                                <option value="<?= $id ?>">📌 <?= $committee['title'] ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-lg-4 col-md-6 mb-3">
+                        <label class="filter-label">
+                            <i class="fas fa-search"></i> Search Members
+                        </label>
+                        <input type="text"
+                            id="memberSearch"
+                            class="form-control-custom w-100"
+                            placeholder="🔍 Search by name, designation or role..."
+                            onkeyup="searchMembers()"
+                            style="border: 2px solid #e0e0e0; border-radius: 12px; padding: 12px 15px;">
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Committees Display -->
+        <div class="container mt-5 pb-5">
+            <div class="row" id="committeesContainer">
+                <?php foreach ($committees as $id => $committee): ?>
+                    <div class="col-12 committee-wrapper" data-committee-id="<?= $id ?>">
+                        <div class="committee-card">
+                            <div class="card-header-custom" data-bs-toggle="collapse" data-bs-target="#committee<?= $id ?>" aria-expanded="true">
+                                <h3>
+                                    <span>
+                                        <i class="fas fa-building"></i> <?= $committee['title'] ?>
+                                        <span class="member-count-badge">
+                                            <i class="fas fa-users"></i> <?= count($committee['members']) ?> Members
+                                        </span>
+                                    </span>
+                                </h3>
+                            </div>
+                            <div id="committee<?= $id ?>" class="collapse show">
+                                <div class="table-responsive">
+                                    <table class="table table-custom">
+                                        <thead>
+                                            <tr>
+                                                <?php foreach ($committee['columns'] as $col): ?>
+                                                    <th><?= $col ?></th>
+                                                <?php endforeach; ?>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($committee['members'] as $index => $member): ?>
+                                                <tr>
+                                                    <td class="serial-number"><?= str_pad($index + 1, 2, '0', STR_PAD_LEFT) ?></td>
+                                                    <td>
+                                                        <strong><?= htmlspecialchars($member[0]) ?></strong>
+                                                    </td>
+                                                    <td>
+                                                        <span class="role-badge">
+                                                            <i class="fas fa-tag"></i> <?= htmlspecialchars($member[1]) ?>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
+                <?php endforeach; ?>
             </div>
-        </div>
-        <!-- slider Area End-->
-        <div class="section-full bg-light py-4">
-            <div class="container">
-                <div class="row justify-content-center">
-
-                <div class="row mb-4 align-items-end">
             
-            <!-- Committee Dropdown -->
-            <div class="col-lg-6 col-md-6 col-sm-12 mb-2">
-                <label class="fw-bold mb-1">Select Committee</label>
-                <select class="form-select" id="committeeSelect" onchange="showCommittee()">
-                    <option value="">-- Select Committee --</option>
-                    <option value="all" selected>All Committees</option>
-                    <?php foreach ($committees as $key => $committee): ?>
-                        <option value="<?= $key ?>"><?= $committee['title'] ?></option>
-                    <?php endforeach; ?>
-                </select>
-
-            </div>
-
-            <!-- Search Box -->
-            <div class="col-lg-6 col-md-6 col-sm-12 mb-2">
-                <label class="fw-bold mb-1">Search Members</label>
-                <input type="text"
-                    id="memberSearch"
-                    class="form-control"
-                    placeholder="Search by name / designation / role..."
-                    onkeyup="searchMembers()">
-            </div>
-
+            <?php if(empty($committees)): ?>
+                <div class="empty-state">
+                    <i class="fas fa-folder-open"></i>
+                    <h4>No Committees Found</h4>
+                    <p>Committees will be displayed here once added.</p>
+                </div>
+            <?php endif; ?>
         </div>
-
-
-        <?php foreach ($committees as $key => $committee): ?>
-            <div class="table-responsive d-none" id="<?= $key ?>">
-                <h5 class="mb-3"><?= $committee['title'] ?></h5>
-                <table class="table table-bordered table-striped align-middle">
-                    <thead class="table-primary">
-                        <tr>
-                            <?php foreach ($committee['columns'] as $col): ?>
-                                <th><?= $col ?></th>
-                            <?php endforeach; ?>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($committee['members'] as $index => $member): ?>
-                            <tr>
-                                <td><?= $index + 1 ?></td>
-                                <td><?= $member[0] ?></td>
-                                <td><?= $member[1] ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endforeach; ?>
-
-        </div>
-    </div>
-</div>
-
 
     </main>
-    <footer>
-        <!-- Footer Start-->
 
-        <!-- footer-bottom aera -->
-		<?php include('./config/footer.php'); ?>
-
-        <!-- Footer End-->
-    </footer>
+    <!-- Footer -->
+    <?php include "./config/footer.php"; ?>
 
     <!-- JS here -->
-
-    <!-- All JS Custom Plugins Link Here here -->
     <script src="./assets/js/vendor/modernizr-3.5.0.min.js"></script>
-
-    <!-- Jquery, Popper, Bootstrap -->
     <script src="./assets/js/vendor/jquery-1.12.4.min.js"></script>
     <script src="./assets/js/popper.min.js"></script>
     <script src="./assets/js/bootstrap.min.js"></script>
-    <!-- Jquery Mobile Menu -->
     <script src="./assets/js/jquery.slicknav.min.js"></script>
-
-    <!-- Jquery Slick , Owl-Carousel Plugins -->
     <script src="./assets/js/owl.carousel.min.js"></script>
     <script src="./assets/js/slick.min.js"></script>
-
-    <!-- One Page, Animated-HeadLin -->
     <script src="./assets/js/wow.min.js"></script>
     <script src="./assets/js/animated.headline.js"></script>
     <script src="./assets/js/jquery.magnific-popup.js"></script>
-
-    <!-- Scrollup, nice-select, sticky -->
     <script src="./assets/js/jquery.scrollUp.min.js"></script>
     <script src="./assets/js/jquery.nice-select.min.js"></script>
     <script src="./assets/js/jquery.sticky.js"></script>
-
-    <!-- contact js -->
     <script src="./assets/js/contact.js"></script>
     <script src="./assets/js/jquery.form.js"></script>
     <script src="./assets/js/jquery.validate.min.js"></script>
     <script src="./assets/js/mail-script.js"></script>
     <script src="./assets/js/jquery.ajaxchimp.min.js"></script>
-
-    <!-- Jquery Plugins, main Jquery -->
-    <script src="./assets/js/jquery-2.2.4.min.js"></script>
     <script src="./assets/js/plugins.js"></script>
     <script src="./assets/js/main.js"></script>
     <script src="./assets/js/active.js"></script>
-
     <script src="./assets/js/datatables-demo.js"></script>
     <script src="./assets/datatables/jquery.dataTables.min.js"></script>
     <script src="./assets/datatables/dataTables.bootstrap4.min.js"></script>
 
-
-	<script>
-		$(document).ready(function() {
-			$('#btn1').click(function() {
-				$("#bg").css("fontSize", "18px");
-                $(".card-text").css("fontSize", "18px");
-
-			});
-			$('#btn2').click(function() {
-				$("#bg").css("fontSize", "16px");
-				$(".card-text").css("fontSize", "16px");
-
-
-			});
-			$('#btn3').click(function() {
-				$("#bg").css("fontSize", "13px");
-				$(".card-text").css("fontSize", "13px");
-
-
-			});
-
-		});
-	</script>
     <script>
-document.addEventListener("DOMContentLoaded", function () {
-    showCommittee(); // show all committees by default
-});
-</script>
-  <script>
-    function showCommittee() {
-        const selected = document.getElementById('committeeSelect').value;
-        const tables = document.querySelectorAll('.table-responsive');
-
-        tables.forEach(table => table.classList.add('d-none'));
-
-        if (selected === "all") {
-            tables.forEach(table => table.classList.remove('d-none'));
-        } else if (selected) {
-            document.getElementById(selected).classList.remove('d-none');
-        }
-
-        // Reset search on change
-        document.getElementById('memberSearch').value = "";
-        searchMembers();
-    }
-
-    function searchMembers() {
-        const filter = document.getElementById("memberSearch").value.toLowerCase();
-        const tables = document.querySelectorAll(".table-responsive");
-
-        tables.forEach(table => {
-            const rows = table.querySelectorAll("tbody tr");
-            let hasVisibleRow = false;
-
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                if (text.includes(filter)) {
-                    row.style.display = "";
-                    hasVisibleRow = true;
+        // Font size controls
+        $(document).ready(function() {
+            $('#btn1').click(function() {
+                $("#bg").css("fontSize", "18px");
+                $(".card-text").css("fontSize", "18px");
+                $(".table-custom").css("fontSize", "1rem");
+            });
+            $('#btn2').click(function() {
+                $("#bg").css("fontSize", "16px");
+                $(".card-text").css("fontSize", "16px");
+                $(".table-custom").css("fontSize", "0.95rem");
+            });
+            $('#btn3').click(function() {
+                $("#bg").css("fontSize", "13px");
+                $(".card-text").css("fontSize", "13px");
+                $(".table-custom").css("fontSize", "0.85rem");
+            });
+            
+            // Initialize all cards as expanded
+            $('.collapse').collapse('show');
+            
+            // Back to top button visibility
+            $(window).scroll(function() {
+                if ($(this).scrollTop() > 300) {
+                    $('.back-to-top').addClass('show');
                 } else {
-                    row.style.display = "none";
+                    $('.back-to-top').removeClass('show');
                 }
             });
-
-            // Hide table if no matching rows
-            table.style.display = hasVisibleRow ? "" : "none";
         });
-    }
-</script>
-
-
+        
+        function filterCommittees() {
+            const selected = document.getElementById('committeeSelect').value;
+            const committees = document.querySelectorAll('.committee-wrapper');
+            
+            if (selected === 'all') {
+                committees.forEach(committee => {
+                    committee.style.display = 'block';
+                });
+            } else {
+                committees.forEach(committee => {
+                    if (committee.getAttribute('data-committee-id') === selected) {
+                        committee.style.display = 'block';
+                    } else {
+                        committee.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Reset search when changing committee
+            document.getElementById('memberSearch').value = '';
+            searchMembers();
+        }
+        
+        function searchMembers() {
+            const searchTerm = document.getElementById('memberSearch').value.toLowerCase();
+            const visibleCommittees = document.querySelectorAll('.committee-wrapper[style="display: block"], .committee-wrapper:not([style*="display"])');
+            
+            visibleCommittees.forEach(committee => {
+                const rows = committee.querySelectorAll('tbody tr');
+                let hasVisibleRow = false;
+                
+                rows.forEach(row => {
+                    const text = row.innerText.toLowerCase();
+                    if (text.includes(searchTerm)) {
+                        row.style.display = '';
+                        hasVisibleRow = true;
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+                
+                // Hide committee card if no matching rows
+                const card = committee.querySelector('.committee-card');
+                if (hasVisibleRow) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+        
+    </script>
 
 </body>
 
