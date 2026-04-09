@@ -156,52 +156,6 @@
       </li>
 
     </ul>
-
-    <div class="nav-badge">
-     <form action="https://www.google.com/search" method="get" target="_blank" onsubmit="return combineQuery()">
-  
-  <div style="position:relative; width:260px;">
-    
-    <!-- Search Icon -->
-    <span style="
-      position:absolute;
-      left:10px;
-      top:50%;
-      transform:translateY(-50%);
-      font-size:16px;
-      color:#888;
-    ">🔍</span>
-
-    <!-- Input Field -->
-    <input 
-      type="text" 
-      id="searchBox"
-      placeholder="Search NIIRNCD website..."
-      style="
-        padding:10px 10px 10px 30px;
-        width:100%;
-        border-radius:20px;
-        border:1px solid #ccc;
-        outline:none;
-      "
-    >
-
-  </div>
-
-  <!-- Hidden query -->
-  <input type="hidden" name="q" id="finalQuery">
-
-</form>
-
-<script>
-function combineQuery() {
-  var input = document.getElementById("searchBox").value;
-  document.getElementById("finalQuery").value = "site:https://niirncd.icmr.org.in/ " + input;
-  return true;
-}
-</script>
-    </div>
-
   </div>
 </div>
 

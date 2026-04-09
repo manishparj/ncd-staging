@@ -375,8 +375,8 @@ body { font-family: 'Source Sans 3', sans-serif; color: var(--text); background:
 .director-name {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #fff;
   margin-top: 5px;
+  text-align: center;
 }
 
 /* ═══════════════════════════════════════════

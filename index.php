@@ -95,27 +95,26 @@
     <link rel="manifest" href="site.webmanifest">
     <link rel="shortcut icon" type="image/x-icon" href="assets/img/favicon.ico">
 
-    <!-- Original vendor CSS — untouched -->
-    <link rel="stylesheet" href="./assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="./assets/css/owl.carousel.min.css">
-    <link rel="stylesheet" href="./assets/css/flaticon.css">
-    <link rel="stylesheet" href="./assets/css/animate.min.css">
-    <link rel="stylesheet" href="./assets/css/magnific-popup.css">
-    <link rel="stylesheet" href="./assets/css/fontawesome-all.min.css">
-    <link rel="stylesheet" type="text/css" href="./assets/slick/slick.css">
-    <link rel="stylesheet" type="text/css" href="./assets/slick/slick-theme.css">
-    <link rel="stylesheet" href="./assets/css/nice-select.css">
-    <link rel="stylesheet" href="./assets/css/style.css">
+    <!-- CSS - Minified and Combined -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/SlickNav/1.0.10/slicknav.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css">
+    
     <!-- Google Fonts -->
-    <link
-        href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap"
-        rel="stylesheet">
-    <!-- Font Awesome 6 for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="index.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="./index.css">
     <link rel="stylesheet" href="./config/footer.css">
-    <!-- Font Awesome 6 Free CDN -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="stylenav.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 </head>
 
 <body id="bg">
@@ -232,75 +231,93 @@
                             </div>
                         </div>
                     </div>
+                                         <?php
+// Fetch Director General ICMR info
+$sql = "SELECT * FROM dgicmr WHERE id=1";
+$query = $dbh->prepare($sql);
+$query->execute();
+$dgResults = $query->fetchAll(PDO::FETCH_OBJ);
 
+// Fetch Director's Message / Insights
+$name = "director";
+$sql2 = "SELECT * FROM emp_details WHERE emp_type = :type ORDER BY emp_seniority ASC LIMIT 1";
+$query2 = $dbh->prepare($sql2);
+$query2->bindParam(":type", $name, PDO::PARAM_STR);
+$query2->execute();
+$director = $query2->fetch(PDO::FETCH_OBJ);
 
+$profile = null;
+if ($director) {
+    $sqlProfile = "SELECT * FROM director_profile WHERE id = :id";
+    $queryProfile = $dbh->prepare($sqlProfile);
+    $queryProfile->bindParam(":id", $director->emp_id, PDO::PARAM_INT);
+    $queryProfile->execute();
+    $profile = $queryProfile->fetch(PDO::FETCH_OBJ);
+}
+?>
 
-                    <div class="col-lg-5 col-md-12">
-                        <div class="col-lg-12  director-col">
-                            <span class="sec-tag">Insights</span>
-                            <h2 class="sec-title">Director’s Message</h2>
-                            <div class="sec-line"></div>
-                        </div>
-                        <div class="team-padding">
-                            <div class="shadow bg-white rounded text-center">
-                                <?php
-                $name = "director";
-                $sql =
-                    "SELECT * FROM emp_details WHERE emp_type = :type ORDER BY emp_seniority ASC LIMIT 1";
-                $query = $dbh->prepare($sql);
-                $query->bindParam(":type", $name, PDO::PARAM_STR);
-                $query->execute();
-                $result = $query->fetch(PDO::FETCH_OBJ);
+    <div class="col-lg-5 col-md-12">
+        <div class="shadow bg-white rounded p-3 d-flex flex-column flex-lg-row h-100">
+            
+            <!-- Left: Director General ICMR -->
+             <div class="col-lg-4 col-md-12">
+            <?php if (!empty($dgResults)): ?>
+                <?php foreach ($dgResults as $dg): ?>
+                    <div class="flex-fill  p-2">
+                        <span class="sec-tag">Director General ICMR</span>
+                        <h4 class="sec-title"><?php echo htmlentities($dg->name_en); ?></h4>
+                        <div class="sec-line mb-2"></div>
 
-                if ($result): ?>
+                        <img src="admin/img/our_team/dg-icmr/<?php echo htmlentities($dg->img); ?>"
+                             alt="<?php echo htmlentities($dg->name_en); ?>"
+                             class="director-img mb-2" />
 
-                                <!-- Director Image -->
-                                <img src="admin/img/our_team/director/<?php echo htmlentities(
-                      $result->emp_image
-                  ); ?>" alt="<?php echo htmlentities($result->emp_name); ?>" class="director-img mb-2">
+                        <h5 class="director-name"><?php echo htmlentities($dg->name_en); ?></h5>
+                        <p class="card-text text-justify mt-2"  style="line-height:1.6;"><?php echo htmlentities($dg->designation_en); ?></p>
 
-                                <!-- Director Name -->
-                                <h5 class="director-name">
-                                    <?php echo htmlentities($result->emp_name); ?>
-                                </h5>
-
-                                <?php endif;
-                ?>
-
-                                <!-- Description -->
-                                <?php
-                    $sql9 = "SELECT * FROM director_profile WHERE id = :id";
-                    $query9 = $dbh->prepare($sql9);
-                    $query9->bindParam(":id", $result->emp_id, PDO::PARAM_INT);
-                    $query9->execute();
-                    $profile = $query9->fetch(PDO::FETCH_OBJ);
-                    ?>
-
-                                <p class="card-text text-justify mt-2" id="bg1">
-                                    <?php
-                    $message = $profile->director_message ?? "";
-                    $limit = 650; // adjust as needed
-
-                    if (strlen($message) > $limit) {
-                        $shortMsg = substr($message, 0, $limit) . "...";
-                    } else {
-                        $shortMsg = $message;
-                    }
-
-                    echo htmlentities($shortMsg);
-                    ?>
-
-                                </p>
-                                <!-- Button -->
-                                <a class="genric-btn success" href="about-director.php"
-                                    style="width:100%;background-color:#003679;">
-                                    View Profile →
-                                </a>
-
-                            </div>
-                        </div>
+                        <a class="genric-btn success mt-2"
+                           href="https://www.icmr.gov.in/icmr-leadership"
+                           target="_blank"
+                           style="width:100%; background-color:#003679;">
+                            View Profile →
+                        </a>
                     </div>
+                <?php endforeach; ?>
+            <?php endif; ?>
+</div>
+            <!-- Vertical Separator -->
+            <div class="d-none d-lg-block" style="width:1px; background-color:#ccc; margin:0 15px;"></div>
+<div class="col-lg-7 col-md-12">
+            <!-- Right: Director's Message -->
+            <?php if ($director && $profile): ?>
+                <div class="flex-fill p-2">
+                    <span class="sec-tag">Insights</span>
+                    <h4 class="sec-title">Director’s Message</h4>
+                    <div class="sec-line mb-2"></div>
 
+                    <img src="admin/img/our_team/director/<?php echo htmlentities($director->emp_image); ?>"
+                         alt="<?php echo htmlentities($director->emp_name); ?>"
+                         class="director-img mb-2" />
+
+                    <h5 class="director-name"><?php echo htmlentities($director->emp_name); ?></h5>
+
+                    <p class="card-text text-justify mt-2" style="line-height:1.6;">
+                        <?php
+                        $message = $profile->director_message ?? "";
+                        $limit = 240;
+                        echo htmlentities(strlen($message) > $limit ? substr($message, 0, $limit) . "..." : $message);
+                        ?>
+                    </p>
+
+                    <a class="genric-btn success mt-2" href="about-director.php"
+                       style="width:100%; background-color:#003679;">
+                        View Profile →
+                    </a>
+                </div>
+            <?php endif; ?>
+</div>
+        </div>
+    </div>
                 </div>
             </div>
         </div>
@@ -665,7 +682,7 @@
                             <span class="sec-tag">Working Together</span>
                             <h2 class="sec-title">Our Partners & Collaborators</h2>
                             <div class="sec-line"></div>
-                            <div class="row g-4 justify-content-center">
+                            <div class="g-4 justify-content-center" style="display: flex;">
 
                                 <div class="text-center">
                                     <div class="collab-circle">
@@ -787,76 +804,6 @@
         </div>
     </div>
 </section>
-
-<style>
-/* Section Title */
-.sec-tag {
-    font-size: 0.85rem;
-    letter-spacing: 1px;
-}
-.sec-title {
-    font-size: 2rem;
-    line-height: 1.3;
-}
-
-/* Card styling */
-.tile-card {
-    transition: transform 0.3s, box-shadow 0.3s;
-    border-radius: 10px;
-}
-.hover-zoom:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 25px rgba(0,0,0,0.2);
-}
-.tile-card .icon-badge {
-    background: #C8922A;
-    width: 45px;
-    height: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-}
-.tile-card .card-header small {
-    font-size: 0.8rem;
-}
-
-/* Scrollable objectives */
-.objective-scroll {
-    max-height: 220px;
-    overflow-y: auto;
-    padding-right: 5px;
-}
-.objective-scroll li {
-    margin-bottom: 0.6rem;
-}
-
-/* Responsive adjustments */
-@media (max-width: 992px) {
-    .tile-card .icon-badge {
-        width: 50px;
-        height: 50px;
-    }
-    .sec-title {
-        font-size: 1.75rem;
-    }
-}
-@media (max-width: 768px) {
-    .objective-scroll {
-        max-height: 300px;
-    }
-    .sec-title {
-        font-size: 1.5rem;
-    }
-}
-@media (max-width: 576px) {
-    .tile-card .icon-badge {
-        width: 45px;
-        height: 45px;
-    }
-}
-</style>
-      
 
        <section class="latest-updates-section">
           <div class="container">
