@@ -81,18 +81,6 @@ body { font-family: 'Source Sans 3', sans-serif; color: var(--text); background:
 /* ═══════════════════════════════════════════
    STICKY NAVBAR
 ═══════════════════════════════════════════ */
-.navbar-wrap {
-  background: var(--navy); position: sticky; top: 0; z-index: 1000;
-  box-shadow: 0 3px 18px rgba(0,0,0,.38);
-  border-top: 1px solid rgba(255,255,255,.07);
-}
-.navbar-inner {
-  max-width: 1320px; margin: auto;
-  display: flex; align-items: stretch; justify-content: space-between;
-  padding: 0 1.5rem; min-height: 56px;
-}
-.nav-list { display: flex; list-style: none; align-items: stretch; }
-.nav-list > li { position: relative; display: flex; align-items: stretch; }
 .nav-list > li > a {
   display: flex; align-items: center; gap: 6px;
   color: rgba(255,255,255,.88); text-decoration: none;
@@ -133,10 +121,7 @@ body { font-family: 'Source Sans 3', sans-serif; color: var(--text); background:
   font-weight: 700; font-size: .82rem; letter-spacing: .08em;
   text-transform: uppercase; border-left: 1px solid rgba(255,255,255,.12); white-space: nowrap;
 }
-.hamburger {
-  display: none; flex-direction: column; justify-content: center;
-  gap: 5px; background: none; border: none; cursor: pointer; padding: 12px 4px;
-}
+
 .hamburger span { display: block; width: 25px; height: 2px; background: #fff; border-radius: 2px; transition: var(--t); }
 .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
 .hamburger.open span:nth-child(2) { opacity: 0; width: 0; }
