@@ -5,6 +5,28 @@ include('inc/config.php');
 // if (strlen($_SESSION['alogin']) == 0) {
 //     header('location:index.php');
 // } else {
+
+if(strlen($_SESSION['alogin'])==0) {
+    header('location:index.php');
+    exit();
+}
+
+$username = $_SESSION['alogin'];
+$sql = "SELECT session_token FROM admin WHERE UserName = :username";
+$query = $dbh->prepare($sql);
+$query->bindParam(':username', $username, PDO::PARAM_STR);
+$query->execute();
+$result = $query->fetch(PDO::FETCH_OBJ);
+
+// If session token exists in DB but not in session, or mismatch, force logout
+if($result && isset($result->session_token) && !empty($result->session_token)) {
+    if(!isset($_SESSION['session_token']) || $_SESSION['session_token'] != $result->session_token) {
+        session_destroy();
+        header('location:index.php?msg=password_changed');
+        exit();
+    }
+}
+
     if (!isset($_SESSION['alogin'])) {
         header('location: index.php');
     } else { 

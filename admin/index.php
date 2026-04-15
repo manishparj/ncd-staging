@@ -181,6 +181,7 @@ if (isset($_POST['login'])) {
         } else {
 
           /* ================= CAPTCHA VALIDATION ================= */
+/* ================= CAPTCHA VALIDATION ================= */
 $userCaptcha = isset($_POST['captcha_input']) ? trim($_POST['captcha_input']) : '';
 
 if (empty($userCaptcha) || !isset($_SESSION['captcha']) ||
@@ -188,21 +189,21 @@ if (empty($userCaptcha) || !isset($_SESSION['captcha']) ||
 
     error_log("CAPTCHA failed from IP: " . $_SERVER['REMOTE_ADDR']);
     echo "<script>alert('Invalid CAPTCHA. Please try again.');</script>";
-
+    
     // Regenerate CAPTCHA after failure
     $_SESSION['captcha'] = generateCaptcha(6);
-      exit(); // Add this to stop execution
-    
-    // STOP EXECUTION HERE - DON'T CONTINUE TO LOGIN LOGIC
-} else {
+    exit(); // <-- IMPORTANT: This MUST be here to stop execution
+}
+
+else {
     // Destroy captcha after correct validation (important)
     unset($_SESSION['captcha']);
 
     // Rate limiting by IP (MOVED INSIDE THE ELSE BLOCK)
     $attemptCount = trackFailedAttempt();
-    if ($attemptCount > 5) {
+    if ($attemptCount > 45) {
         sleep(3);
-        if ($attemptCount > 10) {
+        if ($attemptCount > 20) {
             header('HTTP/1.1 429 Too Many Requests');
             die("Too many login attempts. Please try again after 15 minutes.");
         }
@@ -290,6 +291,18 @@ if (empty($userCaptcha) || !isset($_SESSION['captcha']) ||
                 error_log("Successful login for user: " . $email . " from IP: " . $_SERVER['REMOTE_ADDR']);
                 
                 echo "<script type='text/javascript'> document.location = 'dashboard.php'; </script>";
+
+                // Generate session token
+                // After successful login, add this before the redirect
+                $newSessionToken = bin2hex(random_bytes(32));
+                $updateToken = "UPDATE admin SET session_token = :token WHERE UserName = :username";
+                $tokenQuery = $dbh->prepare($updateToken);
+                $tokenQuery->bindParam(':token', $newSessionToken);
+                $tokenQuery->bindParam(':username', $email);
+                $tokenQuery->execute();
+
+                $_SESSION['session_token'] = $newSessionToken;
+
                 exit();
             } else {
                 // Failed login - get current attempt count
@@ -403,7 +416,7 @@ if (empty($_SESSION['captcha']) || isset($_GET['refresh_captcha'])) {
                                         </div>
                                         <div class="form-group text-center">
     <label><strong>Enter CAPTCHA</strong></label>
-    <div style="font-size: 22px; letter-spacing: 3px; font-weight: bold; background: #f2f2f2; padding: 10px; display: inline-block;">
+    <div style="font-size: 24px; letter-spacing: 3px; font-weight: bold; background: #f0f0f0; padding: 15px 25px; display: inline-block; font-family: monospace; -webkit-user-select: none; user-select: none;">
           <style>
     .pseudo‑text::before {
   content: "<?php echo $_SESSION['captcha']; ?>";

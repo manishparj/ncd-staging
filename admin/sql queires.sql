@@ -181,3 +181,51 @@ CREATE TABLE directors (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_service_period (service_from, service_to)
 );
+
+
+
+
+
+
+-- Run these SQL statements to update your admin table for enhanced security
+ALTER TABLE `admin` 
+ADD COLUMN `role` VARCHAR(50) DEFAULT 'admin' AFTER `Password`,
+ADD COLUMN `is_active` TINYINT(1) DEFAULT 1 AFTER `role`,
+ADD COLUMN `login_attempts` INT DEFAULT 0 AFTER `is_active`,
+ADD COLUMN `last_login` DATETIME NULL AFTER `login_attempts`,
+ADD COLUMN `last_failed_attempt` DATETIME NULL AFTER `last_login`,
+ADD COLUMN `account_locked_until` DATETIME NULL AFTER `last_failed_attempt`;
+
+-- Update existing passwords to use secure hashing (run this for each user)
+-- First, get the plain text password from the user, then generate hash:
+-- Example for password 'admin123':
+-- UPDATE admin SET Password = '$2y$10$YourHashHere' WHERE UserName = 'admin';
+
+-- Add login_attempts column if missing
+ALTER TABLE admin 
+ADD COLUMN IF NOT EXISTS login_attempts INT DEFAULT 0;
+
+ALTER TABLE admin ADD session_token VARCHAR(255) DEFAULT NULL;
+
+
+-- If no admin exists, create one
+
+INSERT INTO admin (UserName, Password) 
+VALUES ('adminncd', MD5('admin12345'));
+
+
+CREATE TABLE IF NOT EXISTS `user_sessions` (
+        `id` int(11) NOT NULL AUTO_INCREMENT,
+        `user_id` int(11) NOT NULL,
+        `session_id` varchar(255) NOT NULL,
+        `session_token` varchar(255) NOT NULL,
+        `ip_address` varchar(45) DEFAULT NULL,
+        `user_agent` text,
+        `last_activity` datetime NOT NULL,
+        `is_active` tinyint(1) DEFAULT 1,
+        `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        KEY `idx_user_id` (`user_id`),
+        KEY `idx_session_token` (`session_token`),
+        KEY `idx_is_active` (`is_active`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
