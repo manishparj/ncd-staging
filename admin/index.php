@@ -146,17 +146,34 @@ function resetFailedAttempts($email = null) {
 }
 
 // Function to verify password - FIXED VERSION
+// Function to verify password - ENHANCED VERSION
 function verifyPassword($input, $storedHash, $email) {
+    // Trim any whitespace
+    $input = trim($input);
+    $storedHash = trim($storedHash);
+    
     // Check if it's MD5 (32 characters hex)
     if (preg_match('/^[a-f0-9]{32}$/i', $storedHash)) {
         // Legacy MD5
-        if (md5($input) === $storedHash) {
+        $inputMd5 = md5($input);
+        if ($inputMd5 === $storedHash) {
+            error_log("MD5 password verified for: " . $email);
             return true;
         }
+        error_log("MD5 verification failed for: " . $email . " - Input MD5: " . $inputMd5 . " vs Stored: " . $storedHash);
         return false;
-    } else {
-        // Modern bcrypt hash
-        return password_verify($input, $storedHash);
+    } 
+    // Check if it's bcrypt (starts with $2y$ or $2a$)
+    elseif (strpos($storedHash, '$2y$') === 0 || strpos($storedHash, '$2a$') === 0) {
+        $result = password_verify($input, $storedHash);
+        error_log("Bcrypt verification for " . $email . ": " . ($result ? "SUCCESS" : "FAILED"));
+        return $result;
+    }
+    // Plain text or other format
+    else {
+        error_log("Unknown hash format for " . $email . ": " . substr($storedHash, 0, 20) . "...");
+        // Try direct comparison as last resort
+        return ($input === $storedHash);
     }
 }
 
@@ -172,168 +189,155 @@ if (isset($_POST['login'])) {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         error_log("CSRF attack detected from IP: " . $_SERVER['REMOTE_ADDR']);
         echo "<script>alert('Invalid request. Please try again.');</script>";
-    } else {
-        
-        // Check honeypot (bot detection)
-        if (!empty($_POST['honeypot'])) {
-            error_log("Bot detected from IP: " . $_SERVER['REMOTE_ADDR']);
-            echo "<script>alert('Invalid request');</script>";
-        } else {
-
-          /* ================= CAPTCHA VALIDATION ================= */
-/* ================= CAPTCHA VALIDATION ================= */
-$userCaptcha = isset($_POST['captcha_input']) ? trim($_POST['captcha_input']) : '';
-
-if (empty($userCaptcha) || !isset($_SESSION['captcha']) ||
-    strtolower($userCaptcha) !== strtolower($_SESSION['captcha'])) {
-
-    error_log("CAPTCHA failed from IP: " . $_SERVER['REMOTE_ADDR']);
-    echo "<script>alert('Invalid CAPTCHA. Please try again.');</script>";
-    
-    // Regenerate CAPTCHA after failure
-    $_SESSION['captcha'] = generateCaptcha(6);
-    exit(); // <-- IMPORTANT: This MUST be here to stop execution
-}
-
-else {
-    // Destroy captcha after correct validation (important)
-    unset($_SESSION['captcha']);
-
-    // Rate limiting by IP (MOVED INSIDE THE ELSE BLOCK)
-    $attemptCount = trackFailedAttempt();
-    if ($attemptCount > 45) {
-        sleep(3);
-        if ($attemptCount > 20) {
-            header('HTTP/1.1 429 Too Many Requests');
-            die("Too many login attempts. Please try again after 15 minutes.");
-        }
+    } 
+    // Check honeypot (bot detection)
+    elseif (!empty($_POST['honeypot'])) {
+        error_log("Bot detected from IP: " . $_SERVER['REMOTE_ADDR']);
+        echo "<script>alert('Invalid request');</script>";
     }
-    
-    // Validate input
-    $email = isset($_POST['exampleInputEmail']) ? trim($_POST['exampleInputEmail']) : '';
-    $password = isset($_POST['exampleInputPassword']) ? $_POST['exampleInputPassword'] : '';
-    
-    // Basic validation
-    if (empty($email) || empty($password)) {
-        echo "<script>alert('Please enter both username and password.');</script>";
-    } else {
-        // Check if account is locked
-        if (isAccountLocked($email)) {
-            echo "<script>alert('Account is temporarily locked due to multiple failed attempts. Please try again after 30 minutes.');</script>";
-        } else {
-            // Get user from database
-            $sql = "SELECT UserName, Password, login_attempts FROM admin WHERE UserName = :email";
-            $query = $dbh->prepare($sql);
-            $query->bindParam(':email', $email, PDO::PARAM_STR);
-            $query->execute();
-            $user = $query->fetch(PDO::FETCH_OBJ);
+    else {
+        // CAPTCHA VALIDATION
+        $userCaptcha = isset($_POST['captcha_input']) ? trim($_POST['captcha_input']) : '';
+        
+        if (empty($userCaptcha) || !isset($_SESSION['captcha']) ||
+            strtolower($userCaptcha) !== strtolower($_SESSION['captcha'])) {
             
-            $passwordValid = false;
+            error_log("CAPTCHA failed from IP: " . $_SERVER['REMOTE_ADDR']);
+            echo "<script>alert('Invalid CAPTCHA. Please try again.');</script>";
             
-            if ($user) {
-                $passwordValid = verifyPassword($password, $user->Password, $email);
+            // Regenerate CAPTCHA after failure
+            $_SESSION['captcha'] = generateCaptcha(6);
+        }
+        else {
+            // Destroy captcha after correct validation
+            unset($_SESSION['captcha']);
+            
+            // Rate limiting by IP
+            $attemptCount = trackFailedAttempt();
+            if ($attemptCount > 45) {
+                sleep(3);
+                if ($attemptCount > 20) {
+                    header('HTTP/1.1 429 Too Many Requests');
+                    die("Too many login attempts. Please try again after 15 minutes.");
+                }
             }
             
-            if ($user && $passwordValid) {
-                // Check if password needs migration (MD5 to bcrypt)
-                if (preg_match('/^[a-f0-9]{32}$/i', $user->Password)) {
-                    // Migrate to bcrypt but KEEP MD5 as fallback
-                    $newHash = password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);
-                    $updateSql = "UPDATE admin SET Password = :newhash WHERE UserName = :email";
-                    $updateQuery = $dbh->prepare($updateSql);
-                    $updateQuery->bindParam(':newhash', $newHash);
-                    $updateQuery->bindParam(':email', $email);
-                    $updateQuery->execute();
+            // Validate input
+            $email = isset($_POST['exampleInputEmail']) ? trim($_POST['exampleInputEmail']) : '';
+            $password = isset($_POST['exampleInputPassword']) ? $_POST['exampleInputPassword'] : '';
+            
+            // Basic validation
+            if (empty($email) || empty($password)) {
+                echo "<script>alert('Please enter both username and password.');</script>";
+            } else {
+                // Check if account is locked
+                if (isAccountLocked($email)) {
+                    echo "<script>alert('Account is temporarily locked due to multiple failed attempts. Please try again after 30 minutes.');</script>";
+                } else {
+                    // Get user from database
+                    $sql = "SELECT UserName, Password, login_attempts FROM admin WHERE UserName = :email";
+                    $query = $dbh->prepare($sql);
+                    $query->bindParam(':email', $email, PDO::PARAM_STR);
+                    $query->execute();
+                    $user = $query->fetch(PDO::FETCH_OBJ);
                     
-                    // Verify migration worked
-                    $verifySql = "SELECT Password FROM admin WHERE UserName = :email";
-                    $verifyQuery = $dbh->prepare($verifySql);
-                    $verifyQuery->bindParam(':email', $email);
-                    $verifyQuery->execute();
-                    $updatedUser = $verifyQuery->fetch(PDO::FETCH_OBJ);
+                    $passwordValid = false;
                     
-                    if ($updatedUser && password_verify($password, $updatedUser->Password)) {
-                        error_log("Password migrated successfully for: " . $email);
+                    if ($user) {
+                        $passwordValid = verifyPassword($password, $user->Password, $email);
+                    }
+                    
+                    if ($user && $passwordValid) {
+                        // Check if password needs migration (MD5 to bcrypt)
+                        if (preg_match('/^[a-f0-9]{32}$/i', $user->Password)) {
+                            // Migrate to bcrypt
+                            $newHash = password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);
+                            $updateSql = "UPDATE admin SET Password = :newhash WHERE UserName = :email";
+                            $updateQuery = $dbh->prepare($updateSql);
+                            $updateQuery->bindParam(':newhash', $newHash);
+                            $updateQuery->bindParam(':email', $email);
+                            $updateQuery->execute();
+                        }
+                        
+                        // Update last_login and reset attempts (use only existing columns)
+                        $updateSql = "UPDATE admin SET last_login = NOW() WHERE UserName = :email";
+                        $updateQuery = $dbh->prepare($updateSql);
+                        $updateQuery->bindParam(':email', $email);
+                        $updateQuery->execute();
+                        
+                        // Reset rate limiting
+                        resetFailedAttempts($email);
+                        
+                        // Clear any existing session data
+                        $_SESSION = array();
+                        
+                        // Regenerate session ID on login
+                        session_regenerate_id(true);
+                        
+                        // Set session variables
+                        $_SESSION['alogin'] = $email;
+                        $_SESSION['login_time'] = time();
+                        $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
+                        $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+                        $_SESSION['authenticated'] = true;
+                        
+                        // Generate session token (if column exists)
+                        $newSessionToken = bin2hex(random_bytes(32));
+                        $_SESSION['session_token'] = $newSessionToken;
+                        
+                        // Try to save token to database if column exists
+                        try {
+                            $updateToken = "UPDATE admin SET session_token = :token WHERE UserName = :username";
+                            $tokenQuery = $dbh->prepare($updateToken);
+                            $tokenQuery->bindParam(':token', $newSessionToken);
+                            $tokenQuery->bindParam(':username', $email);
+                            $tokenQuery->execute();
+                        } catch (PDOException $e) {
+                            // Column doesn't exist - that's fine, continue
+                            error_log("Session token column not found: " . $e->getMessage());
+                        }
+                        
+                        // Log successful login
+                        error_log("Successful login for user: " . $email . " from IP: " . $_SERVER['REMOTE_ADDR']);
+                        
+                        // NOW redirect
+                        echo "<script type='text/javascript'> document.location = 'dashboard.php'; </script>";
+                        exit();
+                        
                     } else {
-                        error_log("Password migration FAILED for: " . $email . " - reverting");
-                        // Revert if migration failed
-                        $revertSql = "UPDATE admin SET Password = :oldhash WHERE UserName = :email";
-                        $revertQuery = $dbh->prepare($revertSql);
-                        $revertQuery->bindParam(':oldhash', $user->Password);
-                        $revertQuery->bindParam(':email', $email);
-                        $revertQuery->execute();
+                        // Failed login - update attempt count if user exists
+                        $currentAttempts = 0;
+                        if ($user) {
+                            $currentAttempts = intval($user->login_attempts) + 1;
+                            try {
+                                $updateSql = "UPDATE admin SET login_attempts = :attempts WHERE UserName = :email";
+                                $updateQuery = $dbh->prepare($updateSql);
+                                $updateQuery->bindParam(':attempts', $currentAttempts);
+                                $updateQuery->bindParam(':email', $email);
+                                $updateQuery->execute();
+                            } catch (PDOException $e) {
+                                // Column might not exist
+                                error_log("login_attempts column not found: " . $e->getMessage());
+                            }
+                        } else {
+                            // User doesn't exist, still track by IP
+                            $currentAttempts = $attemptCount;
+                        }
+                        
+                        $remaining = 5 - $currentAttempts;
+                        
+                        if ($currentAttempts >= 5) {
+                            lockAccount($email);
+                            echo "<script>alert('Too many failed attempts. Account locked for 30 minutes.');</script>";
+                        } else {
+                            echo "<script>alert('Invalid credentials. You have " . max(1, $remaining) . " attempt(s) remaining.');</script>";
+                        }
+                        
+                        // Log failed attempt
+                        error_log("Failed login attempt for user: " . $email . " from IP: " . $_SERVER['REMOTE_ADDR']);
                     }
                 }
-                
-                // Successful login - update last_login
-                $updateSql = "UPDATE admin SET last_login = NOW(), login_attempts = 0 WHERE UserName = :email";
-                $updateQuery = $dbh->prepare($updateSql);
-                $updateQuery->bindParam(':email', $email);
-                $updateQuery->execute();
-                
-                // Reset rate limiting
-                resetFailedAttempts($email);
-                
-                // Clear any existing session data
-                $_SESSION = array();
-                
-                // Regenerate session ID on login
-                session_regenerate_id(true);
-                
-                // Set session variables
-                $_SESSION['alogin'] = $email;
-                $_SESSION['login_time'] = time();
-                $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
-                $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
-                $_SESSION['authenticated'] = true;
-                
-                // Log successful login
-                error_log("Successful login for user: " . $email . " from IP: " . $_SERVER['REMOTE_ADDR']);
-                
-                echo "<script type='text/javascript'> document.location = 'dashboard.php'; </script>";
-
-                // Generate session token
-                // After successful login, add this before the redirect
-                $newSessionToken = bin2hex(random_bytes(32));
-                $updateToken = "UPDATE admin SET session_token = :token WHERE UserName = :username";
-                $tokenQuery = $dbh->prepare($updateToken);
-                $tokenQuery->bindParam(':token', $newSessionToken);
-                $tokenQuery->bindParam(':username', $email);
-                $tokenQuery->execute();
-
-                $_SESSION['session_token'] = $newSessionToken;
-
-                exit();
-            } else {
-                // Failed login - get current attempt count
-                $currentAttempts = 0;
-                if ($user) {
-                    $currentAttempts = intval($user->login_attempts) + 1;
-                    $updateSql = "UPDATE admin SET login_attempts = :attempts, last_failed_attempt = NOW() WHERE UserName = :email";
-                    $updateQuery = $dbh->prepare($updateSql);
-                    $updateQuery->bindParam(':attempts', $currentAttempts);
-                    $updateQuery->bindParam(':email', $email);
-                    $updateQuery->execute();
-                } else {
-                    // User doesn't exist, still track by IP
-                    $currentAttempts = $attemptCount;
-                }
-                
-                $remaining = 5 - $currentAttempts;
-                
-                if ($currentAttempts >= 5) {
-                    lockAccount($email);
-                    echo "<script>alert('Too many failed attempts. Account locked for 30 minutes.');</script>";
-                } else {
-                    echo "<script>alert('Invalid credentials. You have " . max(1, $remaining) . " attempt(s) remaining.');</script>";
-                }
-                
-                // Log failed attempt
-                error_log("Failed login attempt for user: " . $email . " from IP: " . $_SERVER['REMOTE_ADDR']);
             }
-        }
-    }
-} // END OF ELSE BLOCK (CAPTCHA VALID)
         }
     }
 }

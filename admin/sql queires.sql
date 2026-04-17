@@ -212,20 +212,3 @@ ALTER TABLE admin ADD session_token VARCHAR(255) DEFAULT NULL;
 
 INSERT INTO admin (UserName, Password) 
 VALUES ('adminncd', MD5('admin12345'));
-
-
-CREATE TABLE IF NOT EXISTS `user_sessions` (
-        `id` int(11) NOT NULL AUTO_INCREMENT,
-        `user_id` int(11) NOT NULL,
-        `session_id` varchar(255) NOT NULL,
-        `session_token` varchar(255) NOT NULL,
-        `ip_address` varchar(45) DEFAULT NULL,
-        `user_agent` text,
-        `last_activity` datetime NOT NULL,
-        `is_active` tinyint(1) DEFAULT 1,
-        `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (`id`),
-        KEY `idx_user_id` (`user_id`),
-        KEY `idx_session_token` (`session_token`),
-        KEY `idx_is_active` (`is_active`)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
