@@ -5,7 +5,7 @@ error_reporting(0);
 session_start();
 
 // Regenerate session ID to prevent fixation
-if (empty($_SESSION['initialized'])) {
+if (empty($_SESSION['initialized']) && $_SERVER['REQUEST_METHOD'] !== 'POST') {
     session_regenerate_id(true);
     $_SESSION['initialized'] = true;
 }
@@ -19,7 +19,7 @@ setcookie(
         'expires' => 0,
         'path' => $currentCookieParams['path'],
         'domain' => $currentCookieParams['domain'],
-        'secure' => false, // Set to true if using HTTPS
+        'secure' => false,
         'httponly' => true,
         'samesite' => 'Strict'
     ]
@@ -28,50 +28,13 @@ setcookie(
 /* ================= RATE LIMITING & ACCOUNT LOCKOUT ================= */
 include('inc/config.php');
 
-// Create temp directory for rate limiting
-$tempDir = __DIR__ . '/temp/';
-if (!file_exists($tempDir)) {
-    mkdir($tempDir, 0755, true);
-}
-
-// Function to track failed login attempts
-function trackFailedAttempt($email = null) {
-    $ip = $_SERVER['REMOTE_ADDR'];
-    $timestamp = time();
-    $window = 900; // 15 minutes window
-    
-    global $tempDir;
-    $rateFile = $tempDir . 'attempts_' . md5($ip . ($email ?: ''));
-    
-    $attempts = [];
-    if (file_exists($rateFile)) {
-        $data = file_get_contents($rateFile);
-        $attempts = unserialize($data);
-        if (!is_array($attempts)) {
-            $attempts = [];
-        }
-    }
-    
-    // Clean old attempts
-    $attempts = array_filter($attempts, function($attempt) use ($timestamp, $window) {
-        return $attempt > ($timestamp - $window);
-    });
-    
-    // Add current attempt
-    $attempts[] = $timestamp;
-    file_put_contents($rateFile, serialize($attempts));
-    
-    return count($attempts);
-}
-
 // Function to check if account is locked
 function isAccountLocked($email) {
     if (!$email) return false;
     
     global $dbh;
     
-    // Check database for account lock
-    $sql = "SELECT account_locked_until FROM admin WHERE UserName = :email";
+    $sql = "SELECT account_locked_until FROM admin WHERE username = :email";
     $query = $dbh->prepare($sql);
     $query->bindParam(':email', $email, PDO::PARAM_STR);
     $query->execute();
@@ -81,20 +44,10 @@ function isAccountLocked($email) {
         $lockTime = strtotime($result->account_locked_until);
         if ($lockTime && time() < $lockTime) {
             return true;
-        }
-    }
-    
-    // Also check file-based lock as fallback
-    global $tempDir;
-    $lockFile = $tempDir . 'lock_' . md5($email);
-    
-    if (file_exists($lockFile)) {
-        $lockTime = (int)file_get_contents($lockFile);
-        $lockDuration = 1800; // 30 minutes lockout
-        if (time() - $lockTime < $lockDuration) {
-            return true;
         } else {
-            @unlink($lockFile);
+            // Lock expired, reset attempts
+            resetFailedAttempts($email);
+            return false;
         }
     }
     
@@ -106,75 +59,127 @@ function lockAccount($email) {
     if ($email) {
         global $dbh;
         
-        // Lock in database
-        $lockUntil = date('Y-m-d H:i:s', time() + 1800); // 30 minutes from now
-        $sql = "UPDATE admin SET account_locked_until = :lockuntil WHERE UserName = :email";
+        $lockUntil = date('Y-m-d H:i:s', time() + 1800);
+        $sql = "UPDATE admin SET account_locked_until = :lockuntil, login_attempts = 5 WHERE username = :email";
         $query = $dbh->prepare($sql);
         $query->bindParam(':lockuntil', $lockUntil);
         $query->bindParam(':email', $email);
         $query->execute();
-        
-        // Also create file-based lock
-        global $tempDir;
-        $lockFile = $tempDir . 'lock_' . md5($email);
-        file_put_contents($lockFile, time());
         
         error_log("Account locked: " . $email . " from IP: " . $_SERVER['REMOTE_ADDR']);
     }
 }
 
 // Function to reset failed attempts
-function resetFailedAttempts($email = null) {
+function resetFailedAttempts($email) {
     global $dbh;
     
+    $sql = "UPDATE admin SET login_attempts = 0, account_locked_until = NULL, last_failed_attempt = NULL WHERE username = :email";
+    $query = $dbh->prepare($sql);
+    $query->bindParam(':email', $email);
+    $query->execute();
+}
+
+// Function to increment failed attempts
+function incrementFailedAttempts($email) {
+    global $dbh;
+    
+    $sql = "UPDATE admin SET login_attempts = login_attempts + 1, last_failed_attempt = NOW() WHERE username = :email";
+    $query = $dbh->prepare($sql);
+    $query->bindParam(':email', $email);
+    $query->execute();
+    
+    // Get current attempts
+    $sql2 = "SELECT login_attempts FROM admin WHERE username = :email";
+    $query2 = $dbh->prepare($sql2);
+    $query2->bindParam(':email', $email);
+    $query2->execute();
+    $result = $query2->fetch(PDO::FETCH_OBJ);
+    
+    return $result ? $result->login_attempts : 0;
+}
+
+// Function to get IP-based rate limiting
+function checkIpRateLimit() {
     $ip = $_SERVER['REMOTE_ADDR'];
-    global $tempDir;
+    $timestamp = time();
+    $window = 900; // 15 minutes
+    $maxAttempts = 20;
     
-    $rateFile = $tempDir . 'attempts_' . md5($ip . ($email ?: ''));
-    @unlink($rateFile);
+    global $dbh;
     
-    if ($email) {
-        $lockFile = $tempDir . 'lock_' . md5($email);
-        @unlink($lockFile);
+    // Check if login_attempts_ip table exists, if not, skip IP rate limiting
+    try {
+        $cleanSql = "DELETE FROM login_attempts_ip WHERE attempt_time < :cutoff";
+        $cleanQuery = $dbh->prepare($cleanSql);
+        $cutoff = date('Y-m-d H:i:s', $timestamp - $window);
+        $cleanQuery->bindParam(':cutoff', $cutoff);
+        $cleanQuery->execute();
         
-        // Reset in database
-        $sql = "UPDATE admin SET login_attempts = 0, account_locked_until = NULL WHERE UserName = :email";
-        $query = $dbh->prepare($sql);
-        $query->bindParam(':email', $email);
-        $query->execute();
+        $countSql = "SELECT COUNT(*) as count FROM login_attempts_ip WHERE ip_address = :ip AND attempt_time > :cutoff";
+        $countQuery = $dbh->prepare($countSql);
+        $countQuery->bindParam(':ip', $ip);
+        $countQuery->bindParam(':cutoff', $cutoff);
+        $countQuery->execute();
+        $result = $countQuery->fetch(PDO::FETCH_OBJ);
+        
+        return $result && $result->count > $maxAttempts;
+    } catch (PDOException $e) {
+        // Table might not exist, skip IP rate limiting
+        return false;
     }
 }
 
-// Function to verify password - FIXED VERSION
-// Function to verify password - ENHANCED VERSION
+// Function to log IP attempt
+function logIpAttempt() {
+    global $dbh;
+    
+    try {
+        $ip = $_SERVER['REMOTE_ADDR'];
+        $sql = "INSERT INTO login_attempts_ip (ip_address, attempt_time) VALUES (:ip, NOW())";
+        $query = $dbh->prepare($sql);
+        $query->bindParam(':ip', $ip);
+        $query->execute();
+    } catch (PDOException $e) {
+        // Table might not exist, silently fail
+    }
+}
+
+// Function to verify password
 function verifyPassword($input, $storedHash, $email) {
-    // Trim any whitespace
     $input = trim($input);
     $storedHash = trim($storedHash);
     
     // Check if it's MD5 (32 characters hex)
     if (preg_match('/^[a-f0-9]{32}$/i', $storedHash)) {
-        // Legacy MD5
         $inputMd5 = md5($input);
         if ($inputMd5 === $storedHash) {
             error_log("MD5 password verified for: " . $email);
             return true;
         }
-        error_log("MD5 verification failed for: " . $email . " - Input MD5: " . $inputMd5 . " vs Stored: " . $storedHash);
+        error_log("MD5 verification failed for: " . $email);
         return false;
     } 
-    // Check if it's bcrypt (starts with $2y$ or $2a$)
+    // Check if it's bcrypt
     elseif (strpos($storedHash, '$2y$') === 0 || strpos($storedHash, '$2a$') === 0) {
         $result = password_verify($input, $storedHash);
         error_log("Bcrypt verification for " . $email . ": " . ($result ? "SUCCESS" : "FAILED"));
         return $result;
     }
-    // Plain text or other format
     else {
-        error_log("Unknown hash format for " . $email . ": " . substr($storedHash, 0, 20) . "...");
-        // Try direct comparison as last resort
+        error_log("Unknown hash format for " . $email);
         return ($input === $storedHash);
     }
+}
+
+// Generate CAPTCHA function
+function generateCaptcha($length = 6) {
+    $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+    $captcha = '';
+    for ($i = 0; $i < $length; $i++) {
+        $captcha .= $chars[random_int(0, strlen($chars) - 1)];
+    }
+    return $captcha;
 }
 
 /* ================= CSRF PROTECTION ================= */
@@ -182,18 +187,31 @@ if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+// Generate CAPTCHA if it doesn't exist or refresh requested
+if (empty($_SESSION['captcha']) || isset($_GET['refresh_captcha'])) {
+    $_SESSION['captcha'] = generateCaptcha(6);
+}
+
 /* ================= LOGIN PROCESSING ================= */
+$error_message = '';
+
+// IMPORTANT: Clear any previous session data that might interfere
+if (isset($_GET['clear']) && $_GET['clear'] == 1) {
+    session_destroy();
+    header("Location: index.php");
+    exit();
+}
+
 if (isset($_POST['login'])) {
     
     // CSRF Validation
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         error_log("CSRF attack detected from IP: " . $_SERVER['REMOTE_ADDR']);
-        echo "<script>alert('Invalid request. Please try again.');</script>";
+        $error_message = 'Invalid request. Please try again.';
     } 
-    // Check honeypot (bot detection)
     elseif (!empty($_POST['honeypot'])) {
         error_log("Bot detected from IP: " . $_SERVER['REMOTE_ADDR']);
-        echo "<script>alert('Invalid request');</script>";
+        $error_message = 'Invalid request';
     }
     else {
         // CAPTCHA VALIDATION
@@ -203,158 +221,146 @@ if (isset($_POST['login'])) {
             strtolower($userCaptcha) !== strtolower($_SESSION['captcha'])) {
             
             error_log("CAPTCHA failed from IP: " . $_SERVER['REMOTE_ADDR']);
-            echo "<script>alert('Invalid CAPTCHA. Please try again.');</script>";
-            
-            // Regenerate CAPTCHA after failure
+            $error_message = 'Invalid CAPTCHA. Please try again.';
             $_SESSION['captcha'] = generateCaptcha(6);
         }
         else {
-            // Destroy captcha after correct validation
+            // Destroy captcha and generate new one
             unset($_SESSION['captcha']);
+            $_SESSION['captcha'] = generateCaptcha(6);
             
-            // Rate limiting by IP
-            $attemptCount = trackFailedAttempt();
-            if ($attemptCount > 45) {
-                sleep(3);
-                if ($attemptCount > 20) {
-                    header('HTTP/1.1 429 Too Many Requests');
-                    die("Too many login attempts. Please try again after 15 minutes.");
-                }
+            // IP-based rate limiting
+            if (checkIpRateLimit()) {
+                $error_message = 'Too many login attempts from your IP. Please try again after 15 minutes.';
             }
             
-            // Validate input
-            $email = isset($_POST['exampleInputEmail']) ? trim($_POST['exampleInputEmail']) : '';
-            $password = isset($_POST['exampleInputPassword']) ? $_POST['exampleInputPassword'] : '';
-            
-            // Basic validation
-            if (empty($email) || empty($password)) {
-                echo "<script>alert('Please enter both username and password.');</script>";
-            } else {
-                // Check if account is locked
-                if (isAccountLocked($email)) {
-                    echo "<script>alert('Account is temporarily locked due to multiple failed attempts. Please try again after 30 minutes.');</script>";
+            if (empty($error_message)) {
+                // Validate input
+                $email = isset($_POST['exampleInputEmail']) ? trim($_POST['exampleInputEmail']) : '';
+                $password = isset($_POST['exampleInputPassword']) ? $_POST['exampleInputPassword'] : '';
+                
+                if (empty($email) || empty($password)) {
+                    $error_message = 'Please enter both username and password.';
                 } else {
-                    // Get user from database
-                    $sql = "SELECT UserName, Password, login_attempts FROM admin WHERE UserName = :email";
-                    $query = $dbh->prepare($sql);
-                    $query->bindParam(':email', $email, PDO::PARAM_STR);
-                    $query->execute();
-                    $user = $query->fetch(PDO::FETCH_OBJ);
+                    // Log this IP attempt
+                    logIpAttempt();
                     
-                    $passwordValid = false;
-                    
-                    if ($user) {
-                        $passwordValid = verifyPassword($password, $user->Password, $email);
-                    }
-                    
-                    if ($user && $passwordValid) {
-                        // Check if password needs migration (MD5 to bcrypt)
-                        if (preg_match('/^[a-f0-9]{32}$/i', $user->Password)) {
-                            // Migrate to bcrypt
-                            $newHash = password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);
-                            $updateSql = "UPDATE admin SET Password = :newhash WHERE UserName = :email";
-                            $updateQuery = $dbh->prepare($updateSql);
-                            $updateQuery->bindParam(':newhash', $newHash);
-                            $updateQuery->bindParam(':email', $email);
-                            $updateQuery->execute();
-                        }
-                        
-                        // Update last_login and reset attempts (use only existing columns)
-                        $updateSql = "UPDATE admin SET last_login = NOW() WHERE UserName = :email";
-                        $updateQuery = $dbh->prepare($updateSql);
-                        $updateQuery->bindParam(':email', $email);
-                        $updateQuery->execute();
-                        
-                        // Reset rate limiting
-                        resetFailedAttempts($email);
-                        
-                        // Clear any existing session data
-                        $_SESSION = array();
-                        
-                        // Regenerate session ID on login
-                        session_regenerate_id(true);
-                        
-                        // Set session variables
-                        $_SESSION['alogin'] = $email;
-                        $_SESSION['login_time'] = time();
-                        $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
-                        $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
-                        $_SESSION['authenticated'] = true;
-                        
-                        // Generate session token (if column exists)
-                        $newSessionToken = bin2hex(random_bytes(32));
-                        $_SESSION['session_token'] = $newSessionToken;
-                        
-                        // Try to save token to database if column exists
-                        try {
-                            $updateToken = "UPDATE admin SET session_token = :token WHERE UserName = :username";
-                            $tokenQuery = $dbh->prepare($updateToken);
-                            $tokenQuery->bindParam(':token', $newSessionToken);
-                            $tokenQuery->bindParam(':username', $email);
-                            $tokenQuery->execute();
-                        } catch (PDOException $e) {
-                            // Column doesn't exist - that's fine, continue
-                            error_log("Session token column not found: " . $e->getMessage());
-                        }
-                        
-                        // Log successful login
-                        error_log("Successful login for user: " . $email . " from IP: " . $_SERVER['REMOTE_ADDR']);
-                        
-                        // NOW redirect
-                        echo "<script type='text/javascript'> document.location = 'dashboard.php'; </script>";
-                        exit();
-                        
+                    if (isAccountLocked($email)) {
+                        $error_message = 'Account is temporarily locked. Please try again after 30 minutes.';
                     } else {
-                        // Failed login - update attempt count if user exists
-                        $currentAttempts = 0;
+                        // Get user data
+                        $sql = "SELECT username, password, login_attempts, is_active FROM admin WHERE username = :email";
+                        $query = $dbh->prepare($sql);
+                        $query->bindParam(':email', $email, PDO::PARAM_STR);
+                        $query->execute();
+                        $user = $query->fetch(PDO::FETCH_OBJ);
+                        
+                        $passwordValid = false;
+                        
                         if ($user) {
-                            $currentAttempts = intval($user->login_attempts) + 1;
-                            try {
-                                $updateSql = "UPDATE admin SET login_attempts = :attempts WHERE UserName = :email";
+                            // Check if account is active
+                            if (isset($user->is_active) && $user->is_active == 0) {
+                                $error_message = 'Account is disabled. Please contact administrator.';
+                            } else {
+                                $passwordValid = verifyPassword($password, $user->password, $email);
+                            }
+                        }
+                        
+                        if ($user && $passwordValid) {
+                            // SUCCESSFUL LOGIN
+                            
+                            // CRITICAL FIX: Reset failed attempts BEFORE any other operations
+                            resetFailedAttempts($email);
+                            
+                            // Check if password needs migration
+                            if (preg_match('/^[a-f0-9]{32}$/i', $user->password)) {
+                                $newHash = password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);
+                                $updateSql = "UPDATE admin SET password = :newhash WHERE username = :email";
                                 $updateQuery = $dbh->prepare($updateSql);
-                                $updateQuery->bindParam(':attempts', $currentAttempts);
+                                $updateQuery->bindParam(':newhash', $newHash);
                                 $updateQuery->bindParam(':email', $email);
                                 $updateQuery->execute();
-                            } catch (PDOException $e) {
-                                // Column might not exist
-                                error_log("login_attempts column not found: " . $e->getMessage());
                             }
+                            
+                            // Update last_login
+                            $updateSql = "UPDATE admin SET last_login = NOW() WHERE username = :email";
+                            $updateQuery = $dbh->prepare($updateSql);
+                            $updateQuery->bindParam(':email', $email);
+                            $updateQuery->execute();
+                            
+                            // IMPORTANT: Destroy old session completely before creating new one
+                            session_regenerate_id(true);
+                            
+                            // Clear and set fresh session variables
+                            $_SESSION = array();
+                            
+                            $_SESSION['alogin'] = $email;
+                            $_SESSION['login_time'] = time();
+                            $_SESSION['ip_address'] = $_SERVER['REMOTE_ADDR'];
+                            $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
+                            $_SESSION['authenticated'] = true;
+                            $_SESSION['session_id'] = session_id();
+                            
+                            // Generate session token
+                            $newSessionToken = bin2hex(random_bytes(32));
+                            $_SESSION['session_token'] = $newSessionToken;
+                            
+                            // Save token to database if column exists
+                            try {
+                                $checkColumn = "SHOW COLUMNS FROM admin LIKE 'session_token'";
+                                $checkStmt = $dbh->prepare($checkColumn);
+                                $checkStmt->execute();
+                                if ($checkStmt->rowCount() > 0) {
+                                    $updateToken = "UPDATE admin SET session_token = :token WHERE username = :username";
+                                    $tokenQuery = $dbh->prepare($updateToken);
+                                    $tokenQuery->bindParam(':token', $newSessionToken);
+                                    $tokenQuery->bindParam(':username', $email);
+                                    $tokenQuery->execute();
+                                }
+                            } catch (PDOException $e) {
+                                error_log("Session token column not found: " . $e->getMessage());
+                            }
+                            
+                            // Regenerate CSRF token for new session
+                            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+                            
+                            error_log("Successful login for user: " . $email . " from IP: " . $_SERVER['REMOTE_ADDR']);
+                            
+                            echo "<script type='text/javascript'> document.location = 'dashboard.php'; </script>";
+                            exit();
+                            
                         } else {
-                            // User doesn't exist, still track by IP
-                            $currentAttempts = $attemptCount;
+                            // FAILED LOGIN
+                            
+                            if ($user) {
+                                // Increment failed attempts in database
+                                $currentAttempts = incrementFailedAttempts($email);
+                                
+                                if ($currentAttempts >= 5) {
+                                    lockAccount($email);
+                                    $error_message = 'Too many failed attempts. Account locked for 30 minutes.';
+                                } else {
+                                    $remaining = 5 - $currentAttempts;
+                                    $error_message = 'Invalid credentials. You have ' . max(1, $remaining) . ' attempt(s) remaining.';
+                                }
+                            } else {
+                                // User doesn't exist - show generic message
+                                $error_message = 'Invalid credentials.';
+                                error_log("Failed login attempt for non-existent user: " . $email . " from IP: " . $_SERVER['REMOTE_ADDR']);
+                            }
                         }
-                        
-                        $remaining = 5 - $currentAttempts;
-                        
-                        if ($currentAttempts >= 5) {
-                            lockAccount($email);
-                            echo "<script>alert('Too many failed attempts. Account locked for 30 minutes.');</script>";
-                        } else {
-                            echo "<script>alert('Invalid credentials. You have " . max(1, $remaining) . " attempt(s) remaining.');</script>";
-                        }
-                        
-                        // Log failed attempt
-                        error_log("Failed login attempt for user: " . $email . " from IP: " . $_SERVER['REMOTE_ADDR']);
                     }
                 }
             }
         }
     }
-}
-function generateCaptcha($length = 6) {
-    $chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'; // no confusing chars
-    $captcha = '';
-    for ($i = 0; $i < $length; $i++) {
-        $captcha .= $chars[random_int(0, strlen($chars) - 1)];
+    
+    // Regenerate CSRF token after failed attempt
+    if (!empty($error_message)) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
-    return $captcha;
-}
-
-if (empty($_SESSION['captcha']) || isset($_GET['refresh_captcha'])) {
-    $_SESSION['captcha'] = generateCaptcha(6);
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -366,18 +372,39 @@ if (empty($_SESSION['captcha']) || isset($_GET['refresh_captcha'])) {
     <meta name="description" content="">
     <meta name="author" content="">
     
-    <!-- Security Headers -->
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta http-equiv="X-Frame-Options" content="DENY">
     
     <title>Login - ICMR-NIIRNCD Admin Panel</title>
 
-    <!-- Custom fonts-->
     <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-
-    <!-- Custom styles-->
     <link href="css/sb-admin-2.min.css" rel="stylesheet">
+    
+    <style>
+        .captcha-text {
+            font-size: 28px;
+            letter-spacing: 5px;
+            font-weight: bold;
+            background: #f0f0f0;
+            padding: 15px 25px;
+            display: inline-block;
+            font-family: monospace;
+            user-select: none;
+            -webkit-user-select: none;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body class="bg-gradient-primary">
@@ -394,8 +421,13 @@ if (empty($_SESSION['captcha']) || isset($_GET['refresh_captcha'])) {
                                         <h2 class="h4 text-gray-900 mb-4">Admin-panel</h2>
                                     </div>
                                     
+                                    <?php if (!empty($error_message)): ?>
+                                        <div class="alert-danger">
+                                            <?php echo htmlspecialchars($error_message); ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    
                                     <form class="user" method="post" autocomplete="off">
-                                        <!-- CSRF Token -->
                                         <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token']); ?>">
                                         
                                         <div class="form-group">
@@ -414,39 +446,23 @@ if (empty($_SESSION['captcha']) || isset($_GET['refresh_captcha'])) {
                                                    autocomplete="off">
                                         </div>
                                         
-                                        <!-- Honeypot field -->
                                         <div style="display: none;">
                                             <input type="text" name="honeypot" id="honeypot">
                                         </div>
+                                        
                                         <div class="form-group text-center">
-    <label><strong>Enter CAPTCHA</strong></label>
-    <div style="font-size: 24px; letter-spacing: 3px; font-weight: bold; background: #f0f0f0; padding: 15px 25px; display: inline-block; font-family: monospace; -webkit-user-select: none; user-select: none;">
-          <style>
-    .pseudo‑text::before {
-  content: "<?php echo $_SESSION['captcha']; ?>";
-  display: inline-block;
-  font-size: 24px;
-  color: #333;
-  padding: 20px;
-  background: #f0f0f0;
-
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-  </style>
-       
-        <div class="pseudo‑text"></div>
-    </div>
-    <br><br>
-    <input type="text" name="captcha_input" class="form-control form-control-user"
-           placeholder="Enter CAPTCHA"
-           required autocomplete="off">
-    
-    <br>
-    <a href="?refresh_captcha=1">Refresh CAPTCHA</a>
-</div>
+                                            <label><strong>Enter CAPTCHA</strong></label><br>
+                                            <div class="captcha-text">
+                                                <?php echo htmlspecialchars($_SESSION['captcha']); ?>
+                                            </div>
+                                            <br><br>
+                                            <input type="text" name="captcha_input" class="form-control form-control-user"
+                                                   placeholder="Enter CAPTCHA"
+                                                   required autocomplete="off"
+                                                   style="max-width: 200px; margin: 0 auto;">
+                                            <br>
+                                            <a href="?refresh_captcha=1" style="font-size: 14px;">Refresh CAPTCHA</a>
+                                        </div>
                                         
                                         <button class="btn btn-primary btn-user btn-block" name="login" type="submit">
                                             Login
@@ -463,13 +479,30 @@ if (empty($_SESSION['captcha']) || isset($_GET['refresh_captcha'])) {
         </div>
     </div>
 
-    <!-- JavaScript -->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
     <script src="js/sb-admin-2.min.js"></script>
     
     <script>
+        // Clear form fields and any stored state on page load
+        window.addEventListener('load', function() {
+            // Clear all form fields
+            document.getElementById('exampleInputEmail').value = '';
+            document.getElementById('exampleInputPassword').value = '';
+            var captchaInput = document.querySelector('input[name="captcha_input"]');
+            if (captchaInput) {
+                captchaInput.value = '';
+            }
+            document.getElementById('honeypot').value = '';
+            
+            // Clear browser autofill completely
+            setTimeout(function() {
+                document.getElementById('exampleInputEmail').value = '';
+                document.getElementById('exampleInputPassword').value = '';
+            }, 100);
+        });
+        
         // Honeypot check
         document.querySelector('form').addEventListener('submit', function(e) {
             if (document.getElementById('honeypot').value.length > 0) {
@@ -478,20 +511,15 @@ if (empty($_SESSION['captcha']) || isset($_GET['refresh_captcha'])) {
             }
         });
         
-        // Client-side rate limiting
-        let loginAttempts = 0;
-        let lastAttemptTime = 0;
-        
-        document.querySelector('form').addEventListener('submit', function(e) {
-            const now = Date.now();
-            if (loginAttempts >= 3 && (now - lastAttemptTime) < 60000) {
-                e.preventDefault();
-                alert('Too many login attempts. Please wait 1 minute.');
-                return false;
-            }
-            loginAttempts++;
-            lastAttemptTime = now;
-        });
+        // Prevent back button from showing cached page
+        if (window.history && window.history.pushState) {
+            window.history.pushState('forward', null, './');
+            window.history.forward(1);
+            window.addEventListener('popstate', function() {
+                window.location.reload();
+            });
+        }
     </script>
 </body>
+
 </html>

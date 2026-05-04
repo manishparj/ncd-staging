@@ -210,5 +210,5 @@ ALTER TABLE admin ADD session_token VARCHAR(255) DEFAULT NULL;
 
 -- If no admin exists, create one
 
-INSERT INTO admin (UserName, Password) 
+INSERT INTO admin (username, Password) 
 VALUES ('adminncd', MD5('admin12345'));

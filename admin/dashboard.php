@@ -6,10 +6,21 @@ include('inc/config.php');
 //     header('location:index.php');
 // } else {
 
-if(strlen($_SESSION['alogin'])==0) {
-    header('location:index.php');
+// Check if user is logged in
+if (!isset($_SESSION['alogin']) || !isset($_SESSION['authenticated']) || $_SESSION['authenticated'] !== true) {
+    header("Location: index.php");
     exit();
 }
+
+// Optional: Check session timeout (30 minutes)
+if (isset($_SESSION['login_time']) && (time() - $_SESSION['login_time'] > 1800)) {
+    session_destroy();
+    header("Location: index.php?timeout=1");
+    exit();
+}
+
+// Update last activity time
+$_SESSION['login_time'] = time();
 
 $username = $_SESSION['alogin'];
 $sql = "SELECT session_token FROM admin WHERE UserName = :username";
